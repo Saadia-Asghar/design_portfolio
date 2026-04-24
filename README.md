@@ -1,39 +1,43 @@
-# Saadia Asghar — Senior Product Designer Portfolio
+# Saadia Asghar — Design Portfolio
 
-An editorial, longform portfolio built to land **Senior Product Designer** roles. It reads like a book, moves like a product, and thinks like a designer.
+An editorial, longform Next.js portfolio. It reads like a book, moves like a product, and is truthful about what's been shipped.
+
+Live repo: [github.com/Saadia-Asghar/design_portfolio](https://github.com/Saadia-Asghar/design_portfolio)
 
 ## What's inside
 
-- **Cinematic hero** with animated name reveal, live availability badge, local time, parallax scroll, and cursor spotlight
-- **Editorial marquee** of your strengths (Product Thinking, Design Systems, Editorial Craft…)
-- **Manifesto** — a point of view + numbered design principles (this is what recruiters look for in senior roles)
-- **Animated stats strip** with counters that animate in view (2,500+ reached · 1st place Vyrothon · 4 communities led · 40+ shipped)
-- **Featured Case Study** — full Vyrothon breakdown with Problem → Approach → Outcome and a metrics grid (this single section is what unlocks senior interviews)
-- **Selected Work** — 4 sticky-navigation chapters (ACM · MLSA · Premed · Projects) with editorial card grid
-- **Process section** (dark) — your 4-step methodology: Listen → Frame → Prototype → Edit
-- **Recognition wall** with hover-fills and gold-accented awards
-- **Tools & capabilities** grid + second marquee
-- **About & Currently** — a live "what I'm reading/building/thinking" card with local time
-- **Testimonials** on dark background
-- **Contact** — giant serif headline, copy-email button, magnetic CTAs, command-palette reminder
+- **Cinematic hero** — animated name reveal, "Available for Senior Product Designer" status, live local time, parallax scroll, cursor-spotlight
+- **Editorial marquee** of capabilities (Product Thinking · Figma · Canva · Editorial Craft · Visual Systems · Brand Identity · Community Design · End-to-end UX · Prototyping · Visual Storytelling)
+- **Manifesto** — a short point of view + four design principles
+- **Stats strip** with animated counters — populated only with things that are true today. Edit in `seedData.ts` as work ships.
+- **Featured Case Study — Vyrothon Product Design Round**. Structured Problem → Approach → Outcome + metrics grid (Round 01 · Product Design · 1st Place · Figma) and a "View the design on Figma" button.
+- **Selected Work** — 4 chapters (ACM · MLSA · Premed · Projects). Projects opens with the Vyrothon submission. The other three chapters are intentionally empty until real pieces are added — use the floating **+** button.
+- **Process section (dark)** — Understand → Sketch → Design → Review
+- **Recognition** — 1st place Product Design Round · Vyrothon (gold accent) + designer roles at ACM, MLSA, Premed
+- **Capabilities & Tools** — honest list (Figma, Canva) and second marquee
+- **About & Currently** — short bio + live "reading / building / thinking" card + local time
+- **Testimonials** — hidden until real quotes are added (the array is empty in `seedData.ts`)
+- **Contact** — big serif "Let's build something thoughtful.", magnetic CTAs, copy-email button, ⌘K reminder
 - **Colophon footer**
 
 ## Senior-level polish
 
-- **Command palette** (⌘K / Ctrl+K) to jump anywhere on the page — power users and recruiters who hit it will *feel* the attention to detail
-- **Custom cursor** with mix-blend-difference (desktop only, respects touch devices)
+- **⌘K / Ctrl+K command palette** for jumping anywhere on the page
+- **Custom cursor** (dot + ring with mix-blend-difference, desktop only)
 - **Magnetic buttons** that gently pull toward the pointer
-- **Word-by-word text reveals** on in-view
-- **Animated counters** for stats
-- **Two marquees** (inverted strip + compact tools)
-- **Scroll-linked hero parallax**
-- **Sticky top nav** that fades in as you scroll
-- **Local time chip** that updates every 30 seconds
-- **Paper grain texture** over the whole page (subtle SVG noise)
-- **Floating + drawer** (bottom-right) to add your own Canva/Figma designs with localStorage persistence
-- **Kb hints** — "Press ⌘K" shown in the contact section
+- **Word-by-word text reveals**, animated counters, two marquees
+- **Scroll-linked hero parallax**, sticky top nav
+- **Paper grain** SVG texture over the whole page
+- **Floating + drawer** to add Canva/Figma cards — saved to localStorage
+- **Copy-email** with a checkmark confirmation
 
-## Run it
+## Contact
+
+- **Email:** saadianigah@gmail.com
+- **LinkedIn:** [saadia-asghar](https://www.linkedin.com/in/saadia-asghar)
+- **Figma (Vyrothon):** [View design](https://www.figma.com/design/Xc06xzZPmShh4pilH9xeHN/Untitled?t=eaDELDis0cGJ7opZ-0)
+
+## Run it locally
 
 ```bash
 npm install
@@ -42,33 +46,26 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-## Make it yours in 7 steps
+## Make it grow — one honest step at a time
 
-1. **Drop in your résumé** — replace `public/resume.txt` with a real `public/resume.pdf`.
-2. **Update personal info** — open `components/seedData.ts` → edit `siteMeta` (name, role, email, LinkedIn, location, tagline, bio, "Currently" panel).
-3. **Strengthen the featured case study** — edit `featuredCaseStudy` in `seedData.ts`. Make `problem`, `approach` (4 steps), `outcome`, and `metrics` feel *specific* (numbers > adjectives).
-4. **Refine the stats strip** — stats in `seedData.ts` — use concrete numbers only ("2,500 students reached" beats "lots of students").
-5. **Add real screenshots** — click the floating **+** button or edit chapters in `seedData.ts`. Upload cover images for every card. Flat Canva exports look weaker than mockups — drop your designs into phone/laptop mockups from [Mockuuups Studio](https://mockuuups.studio/) or Figma Community first.
-6. **Write impact lines on every card** — recruiters skim. "Reached 500 students" > "Made a poster".
-7. **Get one testimonial** — message a teammate from ACM/MLSA and replace the placeholder quotes in `testimonials`. Even one real quote is 10× the placeholders.
+Everything below is already in the site, waiting for real content. Nothing is fabricated.
 
-## Deploy free in 60 seconds
+1. **Drop in a real résumé** — replace `public/resume.txt` with `public/resume.pdf`.
+2. **Add your real designs** via the floating **+** button on any page. Paste the Canva/Figma link and upload a cover image. The card lands in the chapter of your choice.
+3. **Update the Vyrothon Figma file** with your actual submission. The portfolio already links to it — adding designs there will make the link land on your real work.
+4. **Strengthen `components/seedData.ts`** as you ship more:
+   - `stats` — replace placeholder counts with real numbers as they become true (e.g. "X posters made", "X people reached").
+   - `featuredCaseStudy` — if you write a longer case study, lengthen `approach` and `outcome`. Keep every claim defensible.
+   - `awards` — add new ones as you earn them.
+   - `testimonials` — add the first real quote you get. One real quote beats a page of placeholders.
+5. **Swap the hero background card** (the italic "S.") for a photo of you or your strongest piece, in `components/Portfolio.tsx` → `Hero()`.
 
-**Vercel (recommended):**
+## Deploy free (60 seconds, Vercel)
 
-1. Push this folder to a GitHub repo.
-2. Go to [vercel.com](https://vercel.com) → New Project → Import → Deploy.
-3. You get `https://your-name.vercel.app` instantly — that's the URL you paste into applications.
-
-## Why this gets you shortlisted for senior roles
-
-Three things separate senior from mid from junior portfolios:
-
-1. **Thinking, shown.** The Process section + featured case study show *how you think*, not just what you made. Senior interviews are 80% "walk me through your thinking."
-2. **Specificity.** Stats strip + case-study metrics + impact lines on cards = you speak in numbers. Senior candidates always do.
-3. **Craft and calm.** The editorial typography, paper texture, magnetic buttons, command palette, and custom cursor signal *taste*. Senior hires are often taste hires.
-
-Keep the writing short, specific, and confident. Delete anything you wouldn't defend in an interview. Ship it.
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub.
+2. **New Project** → Import `Saadia-Asghar/design_portfolio`.
+3. Leave settings at defaults (Next.js is auto-detected) → **Deploy**.
+4. You'll get a live URL like `saadia-design-portfolio.vercel.app`. That's the link to paste into applications and your LinkedIn.
 
 ## Tech
 
@@ -97,4 +94,10 @@ public/
 tailwind.config.ts       # palette (paper, ink, blush, sage, gold, cream)
 ```
 
-Go get that senior role, Saadia. Ship it.
+## Rules I kept while writing this site
+
+1. No fabricated numbers. If I don't know the real count, the stat waits.
+2. No invented stories. The "currently" and about sections say true, general things — not manufactured biography.
+3. Vyrothon is described exactly as it happened: first round, product-design category, first place, no pitch, individual submission.
+
+Edit everything in `components/seedData.ts`. One file, all the words.
