@@ -10,6 +10,8 @@ import {
   Copy,
   Download,
   ExternalLink,
+  Github,
+  GraduationCap,
   Linkedin,
   Mail,
   Plus,
@@ -20,12 +22,14 @@ import { useEffect, useRef, useState } from "react";
 import {
   awards,
   capabilities,
+  certifications,
   featuredCaseStudy,
   marqueeWords,
   processSteps,
   seedChapters,
   siteMeta,
   stats,
+  techStack,
   testimonials,
   tools,
 } from "./seedData";
@@ -35,7 +39,7 @@ import AddDrawer from "./AddDrawer";
 import CustomCursor from "./CustomCursor";
 import CommandPalette from "./CommandPalette";
 
-const STORAGE_KEY = "saadia-portfolio-v2";
+const STORAGE_KEY = "saadia-portfolio-v3";
 
 const accentMap: Record<
   Chapter["accent"],
@@ -126,6 +130,26 @@ export default function Portfolio() {
       label: "Open LinkedIn",
       hint: "Social",
       action: () => window.open(siteMeta.linkedin, "_blank"),
+    },
+    ...(siteMeta.github
+      ? [
+          {
+            id: "github",
+            label: "Open GitHub",
+            hint: "Code",
+            action: () => window.open(siteMeta.github!, "_blank"),
+          },
+        ]
+      : []),
+    {
+      id: "figma",
+      label: "Open Vyrothon design on Figma",
+      hint: "1st place",
+      action: () =>
+        window.open(
+          "https://www.figma.com/design/Xc06xzZPmShh4pilH9xeHN/Untitled?t=eaDELDis0cGJ7opZ-0",
+          "_blank"
+        ),
     },
     {
       id: "add",
@@ -339,15 +363,15 @@ function Hero() {
               <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.25em] text-ink/55">
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#C8A24B]" />
-                  1st · Product Design · Vyrothon
+                  Top 5 · Vyrothon · 500+ globally
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#E9C6B5]" />
-                  Designer · ACM
+                  Top 10 · MIT Hack Nation
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#A8B5A0]" />
-                  Designer · MLSA
+                  3rd · BASED Pakistan
                 </span>
               </div>
             </div>
@@ -468,7 +492,11 @@ function Stats() {
           {stats.map((s, i) => (
             <div key={i} className="px-4 md:px-8 first:pl-0 last:pr-0">
               <div className="font-serif-display text-[clamp(2.5rem,6vw,5rem)] leading-none">
-                <Counter value={s.value} />
+                <Counter
+                  value={s.value}
+                  prefix={s.prefix}
+                  suffix={s.suffix}
+                />
               </div>
               <div className="mt-3 text-[11px] uppercase tracking-[0.22em] text-ink/60 leading-relaxed">
                 {s.label}
@@ -877,38 +905,57 @@ function Awards() {
           kicker="Awards, roles, and quiet proof."
         />
         <div className="mt-16 border-t border-ink/20">
-          {awards.map((a, i) => (
-            <motion.a
-              key={i}
-              href="#"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="group grid grid-cols-[auto_1fr_auto] items-center gap-6 py-6 md:py-8 border-b border-ink/20 hover:bg-ink hover:text-paper transition-colors duration-300 px-2 -mx-2 rounded-sm"
-            >
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${
-                  a.accent ? "bg-[#C8A24B]" : "bg-ink group-hover:bg-paper"
+          {awards.map((a, i) => {
+            const isLink = !!a.link;
+            const Tag = (isLink ? motion.a : motion.div) as typeof motion.div;
+            const extraProps = isLink
+              ? ({
+                  href: a.link,
+                  target: "_blank",
+                  rel: "noreferrer",
+                } as const)
+              : {};
+            return (
+              <Tag
+                key={i}
+                {...(extraProps as Record<string, unknown>)}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.05 }}
+                className={`group grid grid-cols-[auto_1fr_auto] items-center gap-6 py-6 md:py-8 border-b border-ink/20 transition-colors duration-300 px-2 -mx-2 rounded-sm ${
+                  isLink ? "hover:bg-ink hover:text-paper cursor-pointer" : ""
                 }`}
-              />
-              <div className="flex-1 min-w-0 flex items-baseline gap-4 flex-wrap">
-                <span className="font-serif-display text-3xl md:text-4xl leading-none">
-                  {a.title}
-                </span>
-                <span className="text-sm opacity-60 italic font-serif-display">
-                  {a.org}
-                </span>
-              </div>
-              <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.25em] opacity-70">
-                <span>{a.year}</span>
-                <ArrowUpRight
-                  size={16}
-                  className="transition group-hover:rotate-0 -rotate-45"
+              >
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    a.accent
+                      ? "bg-[#C8A24B]"
+                      : isLink
+                        ? "bg-ink group-hover:bg-paper"
+                        : "bg-ink"
+                  }`}
                 />
-              </div>
-            </motion.a>
-          ))}
+                <div className="flex-1 min-w-0 flex items-baseline gap-4 flex-wrap">
+                  <span className="font-serif-display text-3xl md:text-4xl leading-none">
+                    {a.title}
+                  </span>
+                  <span className="text-sm opacity-60 italic font-serif-display">
+                    {a.org}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.25em] opacity-70">
+                  <span>{a.year}</span>
+                  {isLink && (
+                    <ArrowUpRight
+                      size={16}
+                      className="transition group-hover:rotate-0 -rotate-45"
+                    />
+                  )}
+                </div>
+              </Tag>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -923,34 +970,78 @@ function ToolsAndCapabilities() {
   return (
     <section className="border-y border-ink/15 bg-cream/50">
       <div className="mx-auto max-w-6xl px-6 md:px-12 py-20 md:py-24">
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid md:grid-cols-2 gap-12 md:gap-16">
           <div>
             <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">
               Capabilities
             </div>
             <ul className="grid grid-cols-2 gap-y-2 gap-x-4 text-lg">
               {capabilities.map((c) => (
-                <li key={c} className="flex items-center gap-2">
-                  <Check size={13} className="text-[#8A6A20]" />
+                <li key={c} className="flex items-start gap-2">
+                  <Check
+                    size={13}
+                    className="text-[#8A6A20] mt-[7px] shrink-0"
+                  />
                   <span>{c}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div>
-            <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">
-              Tools of the trade
+
+          <div className="space-y-10">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">
+                Design tools
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {tools.map((t) => (
+                  <span
+                    key={t.name}
+                    className="px-3.5 py-1.5 rounded-full border border-ink/20 bg-cream text-sm hover:bg-ink hover:text-paper transition cursor-default"
+                    data-cursor="hover"
+                  >
+                    {t.name}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {tools.map((t) => (
-                <span
-                  key={t.name}
-                  className="px-3.5 py-1.5 rounded-full border border-ink/20 bg-cream text-sm hover:bg-ink hover:text-paper transition cursor-default"
-                  data-cursor="hover"
-                >
-                  {t.name}
-                </span>
-              ))}
+
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">
+                Tech stack
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {techStack.map((t) => (
+                  <span
+                    key={t}
+                    className="px-3.5 py-1.5 rounded-full border border-ink/15 bg-paper text-sm text-ink/75 hover:bg-ink hover:text-paper transition cursor-default"
+                    data-cursor="hover"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">
+                Certifications
+              </div>
+              <ul className="divide-y divide-ink/10 border-y border-ink/10">
+                {certifications.map((c) => (
+                  <li
+                    key={c.name}
+                    className="flex items-baseline justify-between gap-4 py-3"
+                  >
+                    <span className="font-serif-display italic text-lg leading-none">
+                      {c.name}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-ink/55">
+                      {c.by}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -959,10 +1050,10 @@ function ToolsAndCapabilities() {
         <Marquee
           items={[
             "Designed in Figma",
-            "Written in Notion",
-            "Shipped in Framer",
-            "Printed in Cormorant Garamond",
-            "Loved in Islamabad",
+            "Written in Canva",
+            "Studying at GIKI",
+            "Shipping from Islamabad",
+            "Set in Cormorant Garamond",
           ]}
           speed={60}
           className="text-xs uppercase tracking-[0.4em] text-ink/60"
@@ -983,7 +1074,7 @@ function About() {
         <div>
           <SectionLabel roman="VI" title="About" />
           <h2 className="mt-8 font-serif-display text-[clamp(2rem,5vw,4rem)] leading-[1.05]">
-            Design is how I think on paper.
+            Designer, student, and campus community builder.
           </h2>
           <p className="mt-8 text-ink/80 leading-relaxed max-w-xl drop-cap">
             {siteMeta.bio} Based in {siteMeta.location}. Reach me at{" "}
@@ -996,7 +1087,32 @@ function About() {
             .
           </p>
 
-          <div className="mt-10 grid sm:grid-cols-2 gap-3">
+          {siteMeta.education && (
+            <div className="mt-8 flex items-start gap-3 px-4 py-4 rounded-2xl border border-ink/15 bg-cream max-w-md">
+              <GraduationCap
+                size={18}
+                className="text-[#8A6A20] mt-0.5 shrink-0"
+              />
+              <div className="leading-snug">
+                <div className="font-serif-display text-lg">
+                  {siteMeta.education.degree}
+                </div>
+                <div className="text-[11px] uppercase tracking-[0.2em] text-ink/55 mt-1">
+                  {siteMeta.education.school}
+                  {siteMeta.education.location
+                    ? ` · ${siteMeta.education.location}`
+                    : ""}
+                </div>
+                {siteMeta.education.years && (
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-ink/50 mt-0.5">
+                    {siteMeta.education.years}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 grid sm:grid-cols-2 gap-3">
             {siteMeta.availableFor.map((r) => (
               <div
                 key={r}
@@ -1142,6 +1258,19 @@ function Contact() {
               LinkedIn
             </a>
           </Magnetic>
+          {siteMeta.github && (
+            <Magnetic>
+              <a
+                href={siteMeta.github}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 px-5 py-3.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink/5 transition"
+              >
+                <Github size={15} />
+                GitHub
+              </a>
+            </Magnetic>
+          )}
           <Magnetic>
             <a
               href={siteMeta.resume}

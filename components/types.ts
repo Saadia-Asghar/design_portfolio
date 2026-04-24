@@ -34,13 +34,19 @@ export type CaseStudy = {
   link?: string;
 };
 
-export type Stat = { value: string; label: string };
+export type Stat = {
+  value: string;
+  label: string;
+  prefix?: string;
+  suffix?: string;
+};
 
 export type Award = {
   title: string;
   org: string;
   year?: string;
   accent?: boolean;
+  link?: string;
 };
 
 export type ProcessStep = {
@@ -51,6 +57,18 @@ export type ProcessStep = {
 
 export type Tool = { name: string };
 
+export type Certification = {
+  name: string;
+  by: string;
+};
+
+export type Education = {
+  school: string;
+  degree: string;
+  location?: string;
+  years?: string;
+};
+
 export type SiteMeta = {
   name: string;
   role: string;
@@ -59,12 +77,15 @@ export type SiteMeta = {
   availableFor: string[];
   email: string;
   linkedin: string;
+  github?: string;
+  phone?: string;
   instagram?: string;
   dribbble?: string;
   resume: string;
   portfolio?: string;
   tagline: string;
   bio: string;
+  education?: Education;
   currently: {
     reading: string;
     building: string;
