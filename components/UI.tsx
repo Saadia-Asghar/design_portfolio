@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AnimatePresence,
   motion,
   useInView,
   useMotionValue,
@@ -243,6 +244,54 @@ export function LocalTime({ timezone = "Asia/Karachi" }: { timezone?: string }) 
   }, [timezone]);
   if (!now) return null;
   return <span>{now} local</span>;
+}
+
+/* --------------------------- RotatingWord --------------------------- */
+
+export function RotatingWord({
+  words,
+  interval = 2000,
+  className,
+}: {
+  words: string[];
+  interval?: number;
+  className?: string;
+}) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (!words.length) return;
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % words.length);
+    }, interval);
+    return () => clearInterval(id);
+  }, [words.length, interval]);
+
+  if (!words.length) return null;
+
+  // Reserve width based on the widest word so the row doesn't jump
+  const widest = words.reduce((a, b) => (a.length >= b.length ? a : b), "");
+
+  return (
+    <span
+      className={`relative inline-flex items-baseline overflow-hidden align-baseline ${className ?? ""}`}
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <span className="invisible whitespace-nowrap">{widest}</span>
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={words[index]}
+          initial={{ y: "110%", opacity: 0 }}
+          animate={{ y: "0%", opacity: 1 }}
+          exit={{ y: "-110%", opacity: 0 }}
+          transition={{ duration: 0.45, ease: [0.32, 0.72, 0.24, 1] }}
+          className="absolute left-0 top-0 whitespace-nowrap"
+        >
+          {words[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
 }
 
 /* --------------------------- Spotlight --------------------------- */

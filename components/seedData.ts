@@ -15,10 +15,11 @@ export const siteMeta: SiteMeta = {
   location: "Islamabad, Pakistan",
   timezone: "Asia/Karachi",
   availableFor: [
-    "Senior Product Designer",
+    "Graphic Designer",
     "Product Designer",
-    "Design Internships & Roles",
+    "Community Builder",
   ],
+  intentions: ["create", "design", "code", "innovate", "build"],
   email: "saadianigah@gmail.com",
   linkedin: "https://www.linkedin.com/in/saadia-asghar",
   github: "https://github.com/Saadia-Asghar",

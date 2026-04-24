@@ -75,6 +75,7 @@ export type SiteMeta = {
   location: string;
   timezone: string;
   availableFor: string[];
+  intentions?: string[];
   email: string;
   linkedin: string;
   github?: string;

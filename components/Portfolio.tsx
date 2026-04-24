@@ -34,7 +34,16 @@ import {
   tools,
 } from "./seedData";
 import type { Card, Chapter } from "./types";
-import { Counter, LocalTime, Magnetic, Marquee, RevealText, SectionLabel, Spotlight } from "./UI";
+import {
+  Counter,
+  LocalTime,
+  Magnetic,
+  Marquee,
+  RevealText,
+  RotatingWord,
+  SectionLabel,
+  Spotlight,
+} from "./UI";
 import AddDrawer from "./AddDrawer";
 import CustomCursor from "./CustomCursor";
 import CommandPalette from "./CommandPalette";
@@ -294,7 +303,11 @@ function Hero() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6E8D5E] opacity-60" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5F7D4F]" />
             </span>
-            Available for {siteMeta.availableFor[0]}
+            <span>Here to</span>
+            <RotatingWord
+              words={siteMeta.intentions ?? ["create"]}
+              className="text-ink font-medium"
+            />
           </div>
           <div className="hidden md:flex items-center gap-4">
             <span>{siteMeta.location}</span>
