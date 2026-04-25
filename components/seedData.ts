@@ -163,12 +163,12 @@ export const awards: Award[] = [
   {
     title: "Microsoft Imagine Cup",
     org: "EcoBite · food-waste platform",
-    year: "Aug 2025 – Present",
+    year: "Aug 2025",
   },
   {
     title: "Promoted to Associate",
     org: "PreMed.PK · Graphic Design",
-    year: "May 2025 – Present",
+    year: "May 2025",
   },
   {
     title: "Student Education Officer",
@@ -262,16 +262,7 @@ export const seedChapters: Chapter[] = [
         link: "https://www.figma.com/design/Oe9j3rJoPVx18SFIPENJE9/Privy-Health?node-id=0-1&t=Em4bdeQzkCb5OnMf-1",
         tags: ["Healthtech", "Dashboard"],
       },
-      {
-        id: "moodmaze",
-        title: "MoodMaze — The Cinematic Engine",
-        subtitle: "Independent · Cinematic interface concept",
-        impact:
-          "Mood-driven storytelling interface — 'Stop scrolling. Start watching.'",
-        image: "/images/moodmaze.png",
-        link: "https://www.figma.com/design/HlnuZL5J1Wk8q6xaAseJ8F/Mood-Maze?t=b3mlhQ4jSQqs94QJ-1",
-        tags: ["Concept", "Storytelling", "Cinema"],
-      },
+
     ],
   },
 
@@ -390,7 +381,7 @@ export const seedChapters: Chapter[] = [
     id: "premed",
     number: "IV",
     title: "PreMed.PK",
-    subtitle: "Graphic Design Associate · Remote · May 2025 – Present",
+    subtitle: "Graphic Design Associate · Remote · May 2025",
     intro:
       "Visual identity and education collateral for a medical-education platform. Promoted to Associate; leading visual identity across the product.",
     accent: "gold",

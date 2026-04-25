@@ -844,11 +844,7 @@ function WorkCard({
             className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="absolute inset-0 grid place-items-center">
-            <div className="font-serif-display text-[7rem] leading-none text-ink/20">
-              {card.title.slice(0, 1)}
-            </div>
-          </div>
+          <div className="absolute inset-0 grid place-items-center" />
         )}
         {card.award && (
           <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-gold/90 text-ink text-[10px] uppercase tracking-[0.25em] px-2.5 py-1 rounded-full shadow-card">
@@ -856,14 +852,6 @@ function WorkCard({
             {card.award}
           </div>
         )}
-        <button
-          onClick={onDelete}
-          className="absolute top-3 right-3 h-7 w-7 rounded-full bg-ink/80 text-paper grid place-items-center opacity-0 group-hover:opacity-100 transition text-sm"
-          aria-label="Remove card"
-          title="Remove"
-        >
-          ×
-        </button>
       </div>
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
