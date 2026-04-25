@@ -377,7 +377,7 @@ function Hero() {
               <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.25em] text-ink/55">
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#C8A24B]" />
-                  Top 5 · Vyrothon · 500+ globally
+                  Top 5 · Vyrothon · 500+ nationally
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#E9C6B5]" />
@@ -1273,10 +1273,12 @@ function Contact() {
           </Magnetic>
           <button
             onClick={copyEmail}
+            title={`Copy ${siteMeta.email} to clipboard`}
+            aria-label={`Copy ${siteMeta.email} to clipboard`}
             className="flex items-center gap-2 px-5 py-3.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink/5 transition"
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? "Copied" : "Copy"}
+            {copied ? "Email copied" : "Copy email"}
           </button>
           <Magnetic>
             <a

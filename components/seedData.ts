@@ -27,11 +27,11 @@ export const siteMeta: SiteMeta = {
   linkedin: "https://www.linkedin.com/in/saadia-asghar",
   github: "https://github.com/Saadia-Asghar",
   phone: "+92 315 912 7771",
-  resume: "/resume.pdf",
+  resume: "/resume.png",
   portfolio: "https://github.com/Saadia-Asghar/design_portfolio",
   tagline:
     "Product designer working across healthtech, hackathons, and student communities.",
-  bio: "B.Sc. Data Science student at GIKI and Graphic Design Associate at PreMed.PK. Lead Product Designer on Vyrothon — 1st in Product Design, Top 5 Finalist out of 500+ applicants globally. Top 10 at MIT Hack Nation with CallPilot, 3rd at BASED Pakistan with ChaInTicket+.",
+  bio: "B.Sc. Data Science student at GIKI and Graphic Design Associate at PreMed.PK. Participated in Vyrothon in the Product Design category — 1st in the opening round, Top 5 Finalist out of 500+ applicants nationally. Top 10 at MIT Hack Nation with CallPilot, 3rd at BASED Pakistan with ChaInTicket+.",
   education: {
     school: "Ghulam Ishaq Khan Institute (GIKI)",
     degree: "B.Sc. Data Science",
@@ -49,7 +49,7 @@ export const stats: Stat[] = [
   {
     value: "500",
     suffix: "+",
-    label: "Applicants globally at Vyrothon — Top 5 Finalist, 1st in Product Design",
+    label: "Applicants nationally at Vyrothon — Top 5 Finalist, 1st in Product Design round",
   },
   {
     value: "30",
@@ -86,25 +86,25 @@ export const featuredCaseStudy: CaseStudy = {
   title: "Vyrothon — Immersive 3D Environment",
   client: "Vyrothon · Product Design & Innovation",
   year: "April 2026",
-  role: "Lead Product Designer",
-  award: "1st · Product Design Round · Top 5 Finalist globally",
+  role: "Participant · Product Design category",
+  award: "1st · Product Design Round · Top 5 Finalist nationally",
   summary:
-    "As Lead Product Designer, I conceptualised an Immersive 3D Environment focused on user presence and gamified storytelling, and engineered a high-fidelity interactive prototype at the National Science & Technology Park (NSTP).",
+    "I participated in Vyrothon in the Product Design category. The submission was an Immersive 3D Environment focused on user presence and gamified storytelling — built as a high-fidelity interactive prototype at the National Science & Technology Park (NSTP).",
   problem:
     "The brief asked for a considered product-design response to a design-and-innovation challenge. I wanted the work to read clearly on its own — so anyone opening the file could understand the idea without a live pitch.",
   approach: [
     "Framed the opportunity around user presence, not features — what would make someone feel inside the product, not on top of it.",
     "Sketched the core moments on paper before opening Figma; a 3D environment has to earn its complexity.",
-    "Engineered a high-fidelity interactive prototype at the NSTP with gamified storytelling interfaces.",
+    "Built a high-fidelity interactive prototype at the NSTP with gamified storytelling interfaces.",
     "Reviewed the file end-to-end and removed anything that didn't support the core idea.",
   ],
   outcome:
-    "Ranked 1st in the Product Design round and advanced to the Top 5 Finalist out of 500+ applicants globally. I did not pitch the work — the prototype carried the idea.",
+    "Ranked 1st in the Product Design round and advanced to the Top 5 Finalist out of 500+ applicants nationally. I did not pitch the work — the prototype carried the idea.",
   metrics: [
-    { label: "Applicants globally", value: "500+" },
+    { label: "Applicants nationally", value: "500+" },
     { label: "Product Design Round", value: "1st" },
     { label: "Final standing", value: "Top 5" },
-    { label: "Role", value: "Lead Designer" },
+    { label: "Category", value: "Product Design" },
   ],
   link: VYROTHON_FIGMA,
 };
@@ -137,13 +137,13 @@ export const processSteps: ProcessStep[] = [
 export const awards: Award[] = [
   {
     title: "1st · Product Design Round",
-    org: "Vyrothon · 500+ applicants globally",
+    org: "Vyrothon · 500+ applicants nationally",
     year: "Apr 2026",
     accent: true,
     link: VYROTHON_FIGMA,
   },
   {
-    title: "Top 5 Finalist (Global)",
+    title: "Top 5 Finalist (National)",
     org: "Vyrothon · Product Design & Innovation",
     year: "Apr 2026",
     accent: true,

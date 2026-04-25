@@ -1,2 +1,0 @@
-Replace this file with your actual resume at public/resume.pdf.
-The "Resume" button on the cover links to /resume.pdf and will download it.
