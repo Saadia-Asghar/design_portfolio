@@ -262,7 +262,16 @@ export const seedChapters: Chapter[] = [
         link: "https://www.figma.com/design/Oe9j3rJoPVx18SFIPENJE9/Privy-Health?node-id=0-1&t=Em4bdeQzkCb5OnMf-1",
         tags: ["Healthtech", "Dashboard"],
       },
-
+      {
+        id: "moodmaze",
+        title: "MoodMaze — The Cinematic Engine",
+        subtitle: "Independent · Cinematic interface concept",
+        impact:
+          "Mood-driven storytelling interface — 'Stop scrolling. Start watching.'",
+        image: "/images/moodmaze.png",
+        link: "https://www.figma.com/design/HlnuZL5J1Wk8q6xaAseJ8F/Mood-Maze?t=b3mlhQ4jSQqs94QJ-1",
+        tags: ["Concept", "Storytelling", "Cinema"],
+      },
     ],
   },
 
