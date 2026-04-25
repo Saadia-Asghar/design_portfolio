@@ -24,6 +24,7 @@ import {
   capabilities,
   certifications,
   featuredCaseStudy,
+  featuredCaseStudyImage,
   marqueeWords,
   processSteps,
   seedChapters,
@@ -48,7 +49,7 @@ import AddDrawer from "./AddDrawer";
 import CustomCursor from "./CustomCursor";
 import CommandPalette from "./CommandPalette";
 
-const STORAGE_KEY = "saadia-portfolio-v3";
+const STORAGE_KEY = "saadia-portfolio-v4";
 
 const accentMap: Record<
   Chapter["accent"],
@@ -150,16 +151,16 @@ export default function Portfolio() {
           },
         ]
       : []),
-    {
-      id: "figma",
-      label: "Open Vyrothon design on Figma",
-      hint: "1st place",
-      action: () =>
-        window.open(
-          "https://www.figma.com/design/Xc06xzZPmShh4pilH9xeHN/Untitled?t=eaDELDis0cGJ7opZ-0",
-          "_blank"
-        ),
-    },
+    ...(featuredCaseStudy.link
+      ? [
+          {
+            id: "figma",
+            label: "Open Vyrothon design on Figma",
+            hint: "1st place",
+            action: () => window.open(featuredCaseStudy.link!, "_blank"),
+          },
+        ]
+      : []),
     {
       id: "add",
       label: "Add a new design card",
@@ -598,32 +599,49 @@ function FeaturedCaseStudy() {
               href={featuredCaseStudy.link ?? "#"}
               target={featuredCaseStudy.link ? "_blank" : undefined}
               rel={featuredCaseStudy.link ? "noreferrer" : undefined}
-              className="group relative block aspect-[4/5] rounded-[22px] overflow-hidden border border-ink/10 shadow-card bg-gradient-to-br from-gold/30 via-cream to-blush/40"
+              className="group relative block aspect-[4/5] rounded-[22px] overflow-hidden border border-ink/10 shadow-card bg-gradient-to-br from-ink/5 via-cream to-cream"
             >
-              <div className="absolute inset-0 grid place-items-center">
-                <div className="text-center px-6">
-                  <Award className="mx-auto mb-6 text-[#8A6A20]" size={44} />
-                  <div className="font-serif-display text-5xl leading-tight">
-                    1st
+              {featuredCaseStudyImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={featuredCaseStudyImage}
+                  alt={featuredCaseStudy.title}
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                />
+              ) : (
+                <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-gold/30 via-cream to-blush/40">
+                  <div className="text-center px-6">
+                    <Award className="mx-auto mb-6 text-[#8A6A20]" size={44} />
+                    <div className="font-serif-display text-5xl leading-tight">
+                      1st
+                    </div>
+                    <div className="font-serif-display italic text-2xl -mt-1">
+                      Product Design Round
+                    </div>
                   </div>
-                  <div className="font-serif-display italic text-2xl -mt-1">
-                    Product Design Round
-                  </div>
-                  <div className="mt-3 text-[11px] uppercase tracking-[0.35em] text-ink/60">
-                    Vyrothon
-                  </div>
-                </div>
-              </div>
-              <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/55">
-                <span>Case No. 01</span>
-                <span>Figma</span>
-              </div>
-              <div className="absolute inset-5 rounded-[14px] border border-ink/15 pointer-events-none" />
-              {featuredCaseStudy.link && (
-                <div className="absolute bottom-5 right-5 h-10 w-10 rounded-full bg-ink text-paper grid place-items-center opacity-0 group-hover:opacity-100 transition">
-                  <ArrowUpRight size={16} />
                 </div>
               )}
+
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] uppercase tracking-[0.3em]">
+                <span className="px-2.5 py-1 rounded-full bg-paper/90 text-ink/75 backdrop-blur">
+                  Case No. 01
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-ink/90 text-paper backdrop-blur">
+                  Figma
+                </span>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent flex items-end justify-between gap-3">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/95 text-ink text-[10px] uppercase tracking-[0.25em] shadow-card">
+                  <Award size={11} />
+                  1st · Product Design
+                </div>
+                {featuredCaseStudy.link && (
+                  <div className="h-9 w-9 rounded-full bg-paper text-ink grid place-items-center transition opacity-90 group-hover:opacity-100 group-hover:scale-105">
+                    <ArrowUpRight size={15} />
+                  </div>
+                )}
+              </div>
             </a>
 
             {featuredCaseStudy.metrics && (

@@ -9,6 +9,9 @@ import type {
   Tool,
 } from "./types";
 
+const VYROTHON_FIGMA =
+  "https://www.figma.com/design/E9IKt31asTEeVyKS595YX3/Vyro?node-id=4-17&t=jjLeblvLTYZQ2yTd-1";
+
 export const siteMeta: SiteMeta = {
   name: "Saadia Asghar",
   role: "Product Designer",
@@ -103,8 +106,10 @@ export const featuredCaseStudy: CaseStudy = {
     { label: "Final standing", value: "Top 5" },
     { label: "Role", value: "Lead Designer" },
   ],
-  link: "https://www.figma.com/design/Xc06xzZPmShh4pilH9xeHN/Untitled?t=eaDELDis0cGJ7opZ-0",
+  link: VYROTHON_FIGMA,
 };
+
+export const featuredCaseStudyImage = "/images/vyrothon.png";
 
 export const processSteps: ProcessStep[] = [
   {
@@ -135,7 +140,7 @@ export const awards: Award[] = [
     org: "Vyrothon · 500+ applicants globally",
     year: "Apr 2026",
     accent: true,
-    link: "https://www.figma.com/design/Xc06xzZPmShh4pilH9xeHN/Untitled?t=eaDELDis0cGJ7opZ-0",
+    link: VYROTHON_FIGMA,
   },
   {
     title: "Top 5 Finalist (Global)",
@@ -147,11 +152,13 @@ export const awards: Award[] = [
     title: "Top 10 Globally",
     org: "MIT Hack Nation · CallPilot",
     year: "Jan 2026",
+    link: "https://www.figma.com/design/yw4reHaM5S3p0WADMxoo2X/Call-Pilot?node-id=11-2&t=9ir8e8FNP0r0qLEj-1",
   },
   {
     title: "3rd Place",
     org: "BASED Pakistan · ChaInTicket+",
     year: "Dec 2025",
+    link: "https://www.figma.com/design/ZZ259rh7azNEfkHnmRLywl/ChainTicket?node-id=0-1&t=EadmwPrVzE99VRTb-1",
   },
   {
     title: "Microsoft Imagine Cup",
@@ -214,128 +221,228 @@ export const certifications: Certification[] = [
 export const testimonials: { quote: string; name: string; role: string }[] = [];
 
 export const seedChapters: Chapter[] = [
+  /* ----------------------- I — Product Design ----------------------- */
   {
-    id: "projects",
+    id: "product",
     number: "I",
-    title: "Product & Hackathons",
-    subtitle: "Competition, MVP, and product-design work",
+    title: "Product Design",
+    subtitle: "Figma · interactive prototypes · hi-fi UI",
     intro:
-      "Product work from hackathons, competitions, and imagine-cup programmes. Vyrothon is featured above — the rest of the portfolio of product work lives here.",
+      "End-to-end product work — from independent concepts to hackathon submissions. Vyrothon is featured above; the rest live here.",
     accent: "ink",
     cards: [
       {
         id: "callpilot",
-        title: "CallPilot — AI Assistant Platform",
-        subtitle: "Product + Full-Stack · Jan 2026",
-        impact: "Top 10 globally among international teams · MIT Hack Nation",
-        tags: ["Product", "React", "Python"],
+        title: "CallPilot — AI Operations Console",
+        subtitle: "Product · React + Python · Jan 2026",
+        impact: "Top 10 globally · MIT Hack Nation",
+        image: "/images/callpilot.png",
+        link: "https://www.figma.com/design/yw4reHaM5S3p0WADMxoo2X/Call-Pilot?node-id=11-2&t=9ir8e8FNP0r0qLEj-1",
         award: "Top 10 · MIT",
+        tags: ["Product", "AI", "Auth"],
+      },
+      {
+        id: "chainticket",
+        title: "ChaInTicket+ — Blockchain Ticketing",
+        subtitle: "Product + Dashboard · Dec 2025",
+        impact:
+          "Pakistan's first on-chain ticketing concept · 3rd at BASED Pakistan",
+        image: "/images/chainticket.png",
+        link: "https://www.figma.com/design/ZZ259rh7azNEfkHnmRLywl/ChainTicket?node-id=0-1&t=EadmwPrVzE99VRTb-1",
+        award: "3rd · BASED",
+        tags: ["Product", "Blockchain", "Hero"],
+      },
+      {
+        id: "privyhealth",
+        title: "PrivyHealth — Patient-Owned Records",
+        subtitle: "Healthtech · Entangled Hackathon 2026",
+        impact:
+          "Pakistan's first patient-owned encrypted medical record layer — full product surface",
+        image: "/images/privyhealth.png",
+        link: "https://www.figma.com/design/Oe9j3rJoPVx18SFIPENJE9/Privy-Health?node-id=0-1&t=Em4bdeQzkCb5OnMf-1",
+        tags: ["Healthtech", "Dashboard"],
+      },
+      {
+        id: "moodmaze",
+        title: "MoodMaze — The Cinematic Engine",
+        subtitle: "Independent · Cinematic interface concept",
+        impact: "Mood-driven storytelling interface concept",
+        link: "https://www.figma.com/design/HlnuZL5J1Wk8q6xaAseJ8F/Mood-Maze?t=b3mlhQ4jSQqs94QJ-1",
+        tags: ["Concept", "Storytelling"],
       },
       {
         id: "ecobite",
         title: "EcoBite — Food-Waste Platform",
         subtitle: "Microsoft Imagine Cup · Active",
         impact:
-          "500+ meals distributed weekly · 30% lift in donation frequency · 5 user roles",
-        tags: ["Azure", "Full-Stack", "Maps API"],
-      },
-      {
-        id: "chainticket",
-        title: "ChaInTicket+ — Blockchain Ticketing",
-        subtitle: "Backend + Dashboard Design · Dec 2025",
-        impact: "Tracked 1,000+ attendees · fraud-proof QR verification",
-        tags: ["Dashboard", "Blockchain"],
-        award: "3rd · BASED",
+          "Donation platform with 5 user roles · Azure AD B2C, SQL, Maps API",
+        tags: ["Azure", "Full-Stack"],
       },
     ],
   },
+
+  /* ----------------------- II — ACM ----------------------- */
   {
-    id: "premed",
+    id: "acm",
     number: "II",
-    title: "PreMed.PK",
-    subtitle: "Graphic Design Associate · Remote · May 2025 – Present",
+    title: "ACM",
+    subtitle: "Core Design & Marketing · Softcom'25 Liaison · GIKI",
     intro:
-      "High-fidelity visual assets for a medical-education platform. Promoted to Associate; leading visual identity across the product.",
+      "Posters, event identities, and marketing collateral for ACM at GIKI — including Softcom'25, the All-Pakistan software competition.",
     accent: "blush",
     cards: [
       {
-        id: "premed-1",
+        id: "acm-wic",
+        title: "Women in Computing — Poster",
+        subtitle: "Event poster · Canva",
+        link: "https://canva.link/e92p1vc5liwinkp",
+        tags: ["Poster", "WIC"],
+      },
+      {
+        id: "acm-softcom",
+        title: "Softcom'25 — Event Identity",
+        subtitle: "Softcom · All-Pakistan event",
+        impact: "Liaison & Tech team contributor",
+        link: "https://canva.link/ifjetfl2g792f0u",
+        tags: ["Event", "Identity"],
+      },
+      {
+        id: "acm-apsc",
+        title: "All-Pakistan Software Competition",
+        subtitle: "Campaign collateral",
+        link: "https://canva.link/at2vzf2pdvwjy8r",
+        tags: ["Campaign"],
+      },
+      {
+        id: "acm-carbonteq",
+        title: "Carbonteq — Sponsor Collateral",
+        subtitle: "Industry partner deliverable",
+        link: "https://canva.link/obnr96908orfwio",
+        tags: ["Sponsor"],
+      },
+      {
+        id: "acm-induction",
+        title: "ACM Induction",
+        subtitle: "Member onboarding visual",
+        link: "https://canva.link/nllc230n1faj0h6",
+        tags: ["Induction"],
+      },
+    ],
+  },
+
+  /* ----------------------- III — MLSA ----------------------- */
+  {
+    id: "mlsa",
+    number: "III",
+    title: "MLSA",
+    subtitle: "Microsoft Learn Student Ambassadors · GIKI",
+    intro:
+      "Visual identity, posters, certificates, and event collateral for the MLSA community at GIKI — covering inductions, learning sessions, and Microsoft programmes.",
+    accent: "sage",
+    cards: [
+      {
+        id: "mlsa-linkedin",
+        title: "Microsoft LinkedIn — Carousel",
+        subtitle: "Social carousel for community LinkedIn",
+        link: "https://canva.link/jiy8mij69zge9ps",
+        tags: ["Social", "LinkedIn"],
+      },
+      {
+        id: "mlsa-ldp",
+        title: "Learning & Development Session",
+        subtitle: "Session poster",
+        link: "https://canva.link/27cdkido37176p0",
+        tags: ["Poster"],
+      },
+      {
+        id: "mlsa-datacamp",
+        title: "Datacamp & Code Series",
+        subtitle: "Series identity poster",
+        link: "https://canva.link/otu10gcpgs1uild",
+        tags: ["Series", "Education"],
+      },
+      {
+        id: "mlsa-card",
+        title: "Microsoft — Member Card",
+        subtitle: "Member card visual",
+        link: "https://canva.link/nni270xk4980970",
+        tags: ["Identity"],
+      },
+      {
+        id: "mlsa-info",
+        title: "Info Session",
+        subtitle: "Event poster",
+        link: "https://canva.link/y7y0b9un3uyj6sc",
+        tags: ["Event"],
+      },
+      {
+        id: "mlsa-cert",
+        title: "Member Certificate",
+        subtitle: "Certificate template",
+        link: "https://canva.link/et94srh8680cbzs",
+        tags: ["Certificate"],
+      },
+      {
+        id: "mlsa-induct",
+        title: "Inductions",
+        subtitle: "Onboarding visuals",
+        link: "https://canva.link/m3zy4dqfvnbzw7u",
+        tags: ["Induction"],
+      },
+      {
+        id: "mlsa-panaflex",
+        title: "Panaflex",
+        subtitle: "Large-format event signage",
+        link: "https://canva.link/nfvzr08alsqq9r9",
+        tags: ["Print", "Signage"],
+      },
+    ],
+  },
+
+  /* ----------------------- IV — PreMed.PK ----------------------- */
+  {
+    id: "premed",
+    number: "IV",
+    title: "PreMed.PK",
+    subtitle: "Graphic Design Associate · Remote · May 2025 – Present",
+    intro:
+      "Visual identity and education collateral for a medical-education platform. Promoted to Associate; leading visual identity across the product.",
+    accent: "gold",
+    cards: [
+      {
+        id: "premed-system",
         title: "Visual-Identity Asset System",
         subtitle: "30+ assets · Canva + Figma",
         impact: "40% lift in digital engagement",
-        tags: ["Visual Identity", "Canva", "Figma"],
+        tags: ["Visual Identity"],
       },
       {
-        id: "premed-2",
+        id: "premed-workflow",
         title: "Design-to-Delivery Workflow",
         subtitle: "Template standardization",
         impact: "25% faster turnaround on recurring assets",
         tags: ["Systems"],
       },
-    ],
-  },
-  {
-    id: "campus",
-    number: "III",
-    title: "Campus Ambassador",
-    subtitle: "Devsinc & Remotebase · GIKI",
-    intro:
-      "Campus-leadership roles bridging students and industry programmes — outreach, events, and social campaigns.",
-    accent: "sage",
-    cards: [
       {
-        id: "devsinc",
-        title: "Devsinc Campus Ambassador",
-        subtitle: "GIKI · Feb 2025 – Present",
-        impact:
-          "10+ workshops & tours for 300+ students · 200+ qualified signups from social campaigns",
-        tags: ["Outreach", "Social"],
+        id: "premed-edu-1",
+        title: "Education Slides — Series I",
+        subtitle: "Slide deck · Canva",
+        link: "https://canva.link/2gr7145jlbx0ttr",
+        tags: ["Slides", "Education"],
       },
       {
-        id: "remotebase",
-        title: "Remotebase · Hackfest 3.0",
-        subtitle: "GIKI · Feb – July 2025",
-        impact: "Facilitated 300+ applicants; primary GIKI liaison for Hackfest 3.0",
-        tags: ["Ambassador"],
-      },
-    ],
-  },
-  {
-    id: "societies",
-    number: "IV",
-    title: "Student Societies",
-    subtitle: "ACM · GDGoC · MLSA · UROG · Microsoft Club",
-    intro:
-      "Core membership across five GIKI societies — design, marketing, education, and outreach.",
-    accent: "gold",
-    cards: [
-      {
-        id: "acm",
-        title: "ACM — Design & Marketing",
-        subtitle: "Core member · Softcom'25 Liaison",
-        impact: "Tech & Liaison team at Softcom'25 (All-Pakistan event)",
-        tags: ["Design", "Marketing"],
+        id: "premed-edu-2",
+        title: "Education Slides — Series II",
+        subtitle: "Slide deck · Canva",
+        link: "https://canva.link/yxt9f7vlj7zs2ex",
+        tags: ["Slides", "Education"],
       },
       {
-        id: "urog",
-        title: "UROG — Student Education Officer",
-        subtitle: "Oct 2024 – Present",
-        impact: "Academic support & technical bootcamps",
-        tags: ["UROG"],
-      },
-      {
-        id: "gdgoc",
-        title: "GDGoC — Core Team",
-        subtitle: "Workshops on AI & Web Dev",
-        impact: "Coordinating workshops for 100+ participants",
-        tags: ["GDG"],
-      },
-      {
-        id: "mlsa-micro",
-        title: "MLSA & Microsoft Club",
-        subtitle: "Core / Outreach contributor",
-        impact: "Development and outreach across both communities",
-        tags: ["MLSA", "Microsoft"],
+        id: "premed-edu-3",
+        title: "Education Slides — Series III",
+        subtitle: "Slide deck · Canva",
+        link: "https://canva.link/dvrkgp6zobfwh9k",
+        tags: ["Slides", "Education"],
       },
     ],
   },
