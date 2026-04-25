@@ -49,7 +49,7 @@ import AddDrawer from "./AddDrawer";
 import CustomCursor from "./CustomCursor";
 import CommandPalette from "./CommandPalette";
 
-const STORAGE_KEY = "saadia-portfolio-v4";
+const STORAGE_KEY = "saadia-portfolio-v5";
 
 const accentMap: Record<
   Chapter["accent"],
