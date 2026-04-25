@@ -337,7 +337,7 @@ function Hero() {
             />
           </h1>
 
-          <div className="mt-10 grid md:grid-cols-[1.1fr_0.9fr] gap-10 items-end">
+          <div className="mt-10 grid md:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
             <div>
               <RevealText
                 text={siteMeta.tagline}
@@ -388,10 +388,39 @@ function Hero() {
                   3rd · BASED Pakistan
                 </span>
               </div>
+
+              <a
+                href="#case"
+                className="group mt-10 flex items-center gap-4 rounded-2xl border border-ink/15 bg-cream/85 backdrop-blur p-3 hover:bg-ink hover:text-paper transition max-w-md shadow-card"
+              >
+                <div className="relative h-16 w-20 rounded-lg overflow-hidden bg-ink shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={featuredCaseStudyImage}
+                    alt="Vyrothon prototype"
+                    className="h-full w-full object-cover transition group-hover:scale-105"
+                  />
+                  <div className="absolute top-1 left-1 h-5 px-1.5 rounded-full bg-gold/95 text-[9px] uppercase tracking-[0.2em] text-ink flex items-center gap-1">
+                    <Award size={9} /> 1st
+                  </div>
+                </div>
+                <div className="flex-1 leading-tight">
+                  <div className="text-[10px] uppercase tracking-[0.25em] opacity-60">
+                    Featured case study
+                  </div>
+                  <div className="mt-1 font-serif-display text-lg leading-snug">
+                    Vyrothon — Product Design Submission
+                  </div>
+                </div>
+                <ArrowDown
+                  size={16}
+                  className="opacity-50 -rotate-90 group-hover:opacity-100 transition shrink-0"
+                />
+              </a>
             </div>
 
             <div className="relative">
-              <div className="aspect-[4/5] rounded-[22px] overflow-hidden relative border border-ink/10 shadow-card">
+              <div className="aspect-[5/6] rounded-[22px] overflow-hidden relative border border-ink/10 shadow-card">
                 <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-sage/60" />
 
                 <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/65">
