@@ -30,7 +30,7 @@ export const siteMeta: SiteMeta = {
   resume: "/resume.png",
   portfolio: "https://github.com/Saadia-Asghar/design_portfolio",
   tagline:
-    "Product designer working across healthtech, hackathons, and student communities.",
+    "Bringing creative to design — across product, brand, and student communities.",
   bio: "B.Sc. Data Science student at GIKI and Graphic Design Associate at PreMed.PK. Participated in Vyrothon in the Product Design category — 1st in the opening round, Top 5 Finalist out of 500+ applicants nationally. Top 10 at MIT Hack Nation with CallPilot, 3rd at BASED Pakistan with ChaInTicket+.",
   education: {
     school: "Ghulam Ishaq Khan Institute (GIKI)",
@@ -83,18 +83,18 @@ export const marqueeWords = [
 
 export const featuredCaseStudy: CaseStudy = {
   id: "vyrothon",
-  title: "Vyrothon — Immersive 3D Environment",
+  title: "Vyrothon — Product Design Submission",
   client: "Vyrothon · Product Design & Innovation",
   year: "April 2026",
   role: "Participant · Product Design category",
   award: "1st · Product Design Round · Top 5 Finalist nationally",
   summary:
-    "I participated in Vyrothon in the Product Design category. The submission was an Immersive 3D Environment focused on user presence and gamified storytelling — built as a high-fidelity interactive prototype at the National Science & Technology Park (NSTP).",
+    "I participated in Vyrothon in the Product Design category. The submission was a high-fidelity interactive prototype focused on user presence and gamified storytelling — built and shown at the National Science & Technology Park (NSTP).",
   problem:
     "The brief asked for a considered product-design response to a design-and-innovation challenge. I wanted the work to read clearly on its own — so anyone opening the file could understand the idea without a live pitch.",
   approach: [
     "Framed the opportunity around user presence, not features — what would make someone feel inside the product, not on top of it.",
-    "Sketched the core moments on paper before opening Figma; a 3D environment has to earn its complexity.",
+    "Sketched the core moments on paper before opening Figma; complex screens have to earn their complexity.",
     "Built a high-fidelity interactive prototype at the NSTP with gamified storytelling interfaces.",
     "Reviewed the file end-to-end and removed anything that didn't support the core idea.",
   ],

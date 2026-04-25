@@ -166,12 +166,14 @@ export function RevealText({
         {words.map((w, i) => (
           <span
             key={i}
-            className="inline-block overflow-hidden align-bottom"
+            // pb / -mb pair gives descenders (g, p, y, j) room to render
+            // without enlarging the laid-out height of the line.
+            className="inline-block overflow-hidden align-bottom pb-[0.18em] -mb-[0.18em]"
             aria-hidden
           >
             <motion.span
-              initial={{ y: "100%", opacity: 0 }}
-              animate={inView ? { y: "0%", opacity: 1 } : { y: "100%", opacity: 0 }}
+              initial={{ y: "110%", opacity: 0 }}
+              animate={inView ? { y: "0%", opacity: 1 } : { y: "110%", opacity: 0 }}
               transition={{
                 duration: 0.7,
                 ease: [0.2, 0.8, 0.2, 1],

@@ -327,7 +327,7 @@ function Hero() {
             </span>
           </div>
 
-          <h1 className="font-serif-display leading-[0.88] tracking-tight text-[clamp(3.5rem,14vw,13rem)]">
+          <h1 className="font-serif-display leading-[0.92] tracking-tight text-[clamp(3.5rem,14vw,13rem)] pb-[0.05em]">
             <RevealText text="Saadia" as="span" className="block" />
             <RevealText
               text="Asghar."
@@ -393,24 +393,34 @@ function Hero() {
             <div className="relative">
               <div className="aspect-[4/5] rounded-[22px] overflow-hidden relative border border-ink/10 shadow-card">
                 <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-sage/60" />
-                <div className="absolute inset-0 grid place-items-center">
-                  <div className="text-center">
-                    <div className="font-serif-display italic text-[14rem] leading-none text-ink/90 select-none">
-                      S.
-                    </div>
-                    <div className="-mt-4 text-[10px] uppercase tracking-[0.5em] text-ink/60">
-                      Volume · I
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/60">
+
+                <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/65">
                   <span>※ A book of selected work</span>
                   <span>First Ed.</span>
                 </div>
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/60">
-                  <span>Designer · Storyteller</span>
-                  <span>{siteMeta.location}</span>
+
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center text-center px-6">
+                  <div className="font-serif-display italic text-[clamp(13rem,32vw,22rem)] leading-[0.78] text-ink/90 select-none pb-[0.18em] -mb-[0.18em]">
+                    S.
+                  </div>
+                  <div className="mt-4 font-serif-display italic text-2xl md:text-3xl text-ink/70 leading-none pb-[0.18em] -mb-[0.18em]">
+                    Asghar
+                  </div>
+                  <div className="mt-6 flex items-center justify-center gap-3 text-[10px] uppercase tracking-[0.4em] text-ink/55">
+                    <span className="h-px w-8 bg-ink/30" />
+                    Volume · I
+                    <span className="h-px w-8 bg-ink/30" />
+                  </div>
+                  <div className="mt-2 font-serif-display italic text-sm text-ink/55">
+                    Designer · Storyteller
+                  </div>
                 </div>
+
+                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/60">
+                  <span>{siteMeta.location}</span>
+                  <span>MMXXVI</span>
+                </div>
+
                 <div className="absolute inset-5 rounded-[16px] border border-ink/15 pointer-events-none" />
               </div>
             </div>
