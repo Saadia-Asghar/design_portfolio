@@ -177,7 +177,7 @@ export const awards: Award[] = [
   },
   {
     title: "Core Design & Marketing",
-    org: "ACM · Softcom'25 Liaison",
+    org: "Association for Computing Machinery · GIKI",
     year: "2024 – Present",
   },
 ];
@@ -266,17 +266,11 @@ export const seedChapters: Chapter[] = [
         id: "moodmaze",
         title: "MoodMaze — The Cinematic Engine",
         subtitle: "Independent · Cinematic interface concept",
-        impact: "Mood-driven storytelling interface concept",
-        link: "https://www.figma.com/design/HlnuZL5J1Wk8q6xaAseJ8F/Mood-Maze?t=b3mlhQ4jSQqs94QJ-1",
-        tags: ["Concept", "Storytelling"],
-      },
-      {
-        id: "ecobite",
-        title: "EcoBite — Food-Waste Platform",
-        subtitle: "Microsoft Imagine Cup · Active",
         impact:
-          "Donation platform with 5 user roles · Azure AD B2C, SQL, Maps API",
-        tags: ["Azure", "Full-Stack"],
+          "Mood-driven storytelling interface — 'Stop scrolling. Start watching.'",
+        image: "/images/moodmaze.png",
+        link: "https://www.figma.com/design/HlnuZL5J1Wk8q6xaAseJ8F/Mood-Maze?t=b3mlhQ4jSQqs94QJ-1",
+        tags: ["Concept", "Storytelling", "Cinema"],
       },
     ],
   },
@@ -286,9 +280,9 @@ export const seedChapters: Chapter[] = [
     id: "acm",
     number: "II",
     title: "ACM",
-    subtitle: "Core Design & Marketing · Softcom'25 Liaison · GIKI",
+    subtitle: "Core Design & Marketing · Association for Computing Machinery · GIKI",
     intro:
-      "Posters, event identities, and marketing collateral for ACM at GIKI — including Softcom'25, the All-Pakistan software competition.",
+      "Posters, event identities, and marketing collateral for the Association for Computing Machinery (ACM) chapter at GIKI.",
     accent: "blush",
     cards: [
       {
@@ -297,14 +291,6 @@ export const seedChapters: Chapter[] = [
         subtitle: "Event poster · Canva",
         link: "https://canva.link/e92p1vc5liwinkp",
         tags: ["Poster", "WIC"],
-      },
-      {
-        id: "acm-softcom",
-        title: "Softcom'25 — Event Identity",
-        subtitle: "Softcom · All-Pakistan event",
-        impact: "Liaison & Tech team contributor",
-        link: "https://canva.link/ifjetfl2g792f0u",
-        tags: ["Event", "Identity"],
       },
       {
         id: "acm-apsc",
