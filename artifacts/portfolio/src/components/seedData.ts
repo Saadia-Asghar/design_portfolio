@@ -447,6 +447,7 @@ export const seedChapters: Chapter[] = [
         title: "Microsoft LinkedIn — Carousel",
         subtitle: "Social carousel for community LinkedIn",
         link: "https://canva.link/jiy8mij69zge9ps",
+        image: "/images/mlsa-linkedin.png",
         tags: ["Social", "LinkedIn"],
       },
       {
@@ -490,6 +491,7 @@ export const seedChapters: Chapter[] = [
         title: "Inductions",
         subtitle: "Onboarding visuals",
         link: "https://canva.link/m3zy4dqfvnbzw7u",
+        image: "/images/mlsa-induct.png",
         tags: ["Induction"],
       },
       {

@@ -10,7 +10,7 @@ import AddDrawer from "./AddDrawer";
 import CustomCursor from "./CustomCursor";
 import CommandPalette from "./CommandPalette";
 
-const STORAGE_KEY = "saadia-portfolio-v6";
+const STORAGE_KEY = "saadia-portfolio-v7";
 
 /* ── utils ── */
 function useLocalTime(tz = "Asia/Karachi") {
