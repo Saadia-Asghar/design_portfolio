@@ -396,7 +396,7 @@ export default function Portfolio() {
           onToggleTheme={toggle}
         />
         <Hero />
-        <BarcodeStrip text="SAADIA·ASGHAR·PRODUCT·DESIGNER·MARKETING·DIRECTOR·AI·INTERN·ISLAMABAD·GIKI" />
+        <BarcodeStrip text="SAADIA·ASGHAR·PRODUCT·DESIGNER·AI·INTERN·ISLAMABAD·GIKI" />
         <Manifesto />
         <StatsRow />
         <BarcodeStrip text="VYROTHON·1ST·MIT·TOP·10·BASED·3RD·NAJOOMI·REPLIT·CANVA·UROG·ACM·MLSA·GDG" />
