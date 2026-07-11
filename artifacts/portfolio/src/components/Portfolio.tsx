@@ -481,6 +481,53 @@ function ChapterBlock({ chapter, index, onDelete }: { chapter: Chapter; index: n
   );
 }
 
+/* ── Link Preview Image — fetches OG image via microlink ── */
+function LinkPreviewImage({ url, title }: { url: string; title: string }) {
+  const [src, setSrc] = useState<string | null>(null);
+  const [status, setStatus] = useState<"loading" | "ok" | "err">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}&screenshot=true&meta=false`, {
+      headers: { Accept: "application/json" },
+    })
+      .then(r => r.json())
+      .then((data: { status: string; data?: { screenshot?: { url?: string }; image?: { url?: string } } }) => {
+        if (cancelled) return;
+        const imgUrl = data?.data?.screenshot?.url ?? data?.data?.image?.url ?? null;
+        if (imgUrl) { setSrc(imgUrl); setStatus("ok"); }
+        else setStatus("err");
+      })
+      .catch(() => { if (!cancelled) setStatus("err"); });
+    return () => { cancelled = true; };
+  }, [url]);
+
+  if (status === "loading") {
+    return (
+      <div className="aspect-[16/9] flex items-center justify-center"
+        style={{ background: "var(--c-surface)", borderBottom: "1px solid var(--c-border)" }}>
+        <div className="text-[10px] tracking-widest uppercase" style={{ color: "var(--c-muted)" }}>
+          LOADING…
+        </div>
+      </div>
+    );
+  }
+  if (status === "ok" && src) {
+    return (
+      <div className="overflow-hidden aspect-[16/9]" style={{ borderBottom: "1px solid var(--c-border)" }}>
+        <img src={src} alt={title} loading="lazy"
+          className="w-full h-full object-cover transition duration-500 hover:scale-[1.04]" />
+      </div>
+    );
+  }
+  return (
+    <div className="aspect-[16/9] flex items-center justify-center text-5xl font-medium tracking-tighter"
+      style={{ background: "var(--c-surface)", borderBottom: "1px solid var(--c-border)" }}>
+      {title.charAt(0)}
+    </div>
+  );
+}
+
 function WorkCard({ card, index, onDelete }: { card: Card; index: number; onDelete: () => void }) {
   return (
     <motion.div
@@ -490,12 +537,14 @@ function WorkCard({ card, index, onDelete }: { card: Card; index: number; onDele
       className="work-card"
       style={{ borderColor: "var(--c-border)" }}
     >
-      {card.image && (
+      {card.image ? (
         <div className="overflow-hidden aspect-[16/9]" style={{ borderBottom: "1px solid var(--c-border)" }}>
-          <img src={card.image} alt={card.title} className="w-full h-full object-cover transition duration-500 hover:scale-[1.04]" />
+          <img src={card.image} alt={card.title}
+            className="w-full h-full object-cover transition duration-500 hover:scale-[1.04]" />
         </div>
-      )}
-      {!card.image && (
+      ) : card.link ? (
+        <LinkPreviewImage url={card.link} title={card.title} />
+      ) : (
         <div className="aspect-[16/9] flex items-center justify-center text-5xl font-medium tracking-tighter"
           style={{ background: "var(--c-surface)", borderBottom: "1px solid var(--c-border)" }}>
           {card.title.charAt(0)}
