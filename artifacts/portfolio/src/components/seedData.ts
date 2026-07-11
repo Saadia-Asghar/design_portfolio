@@ -3,6 +3,7 @@ import type {
   CaseStudy,
   Certification,
   Chapter,
+  Experience,
   ProcessStep,
   SiteMeta,
   Stat,
@@ -14,15 +15,17 @@ const VYROTHON_FIGMA =
 
 export const siteMeta: SiteMeta = {
   name: "Saadia Asghar",
-  role: "Product Designer",
+  role: "Product Designer · Marketing Director · AI Intern",
   location: "Islamabad, Pakistan",
   timezone: "Asia/Karachi",
   availableFor: [
-    "Graphic Designer",
     "Product Designer",
+    "Marketing Director",
+    "Graphic Designer",
+    "AI/ML Intern",
     "Community Builder",
   ],
-  intentions: ["create", "design", "code", "innovate", "build"],
+  intentions: ["create", "design", "market", "build", "innovate"],
   email: "saadianigah@gmail.com",
   linkedin: "https://www.linkedin.com/in/saadia-asghar",
   github: "https://github.com/Saadia-Asghar",
@@ -30,8 +33,8 @@ export const siteMeta: SiteMeta = {
   resume: "/resume.png",
   portfolio: "https://github.com/Saadia-Asghar/design_portfolio",
   tagline:
-    "Bringing creative to design — across product, brand, and student communities.",
-  bio: "B.Sc. Data Science student at GIKI and Graphic Design Associate at PreMed.PK. Participated in Vyrothon in the Product Design category — 1st in the opening round, Top 5 Finalist out of 500+ applicants nationally. Top 10 at MIT Hack Nation with CallPilot, 3rd at BASED Pakistan with ChaInTicket+.",
+    "Product designer, marketing director, and AI intern — building real things under real deadlines.",
+  bio: "B.Sc. Data Science student at GIKI. Currently Marketing Director at UROG, AI Intern at Najoomi, and Campus Ambassador for Canva and Replit. I prefer building products over just writing code — rapid prototyping, shipping under deadlines, and making data useful through clean interfaces. Hackathon record: 1st at Vyrothon (500+ applicants), Top 5 Nationally, Top 10 MIT Hack Nation, 3rd BASED Pakistan.",
   education: {
     school: "Ghulam Ishaq Khan Institute (GIKI)",
     degree: "B.Sc. Data Science",
@@ -44,6 +47,119 @@ export const siteMeta: SiteMeta = {
     thinking: "Immersive UI and storytelling-based interfaces",
   },
 };
+
+export const experiences: Experience[] = [
+  {
+    id: "najoomi",
+    org: "Najoomi",
+    role: "Artificial Intelligence Intern",
+    period: "July 2026 – Present",
+    current: true,
+    type: "ai",
+  },
+  {
+    id: "urog-md",
+    org: "UROG",
+    role: "Marketing Director",
+    period: "May 2026 – Present",
+    current: true,
+    type: "marketing",
+    description: "Leading marketing strategy and execution for the organisation.",
+  },
+  {
+    id: "canva-lead",
+    org: "Canva Community GIKI",
+    role: "Community Lead",
+    period: "June 2026 – Present",
+    current: true,
+    type: "community",
+  },
+  {
+    id: "canva-amb",
+    org: "Canva",
+    role: "Campus Ambassador",
+    period: "June 2026 – Present",
+    current: true,
+    type: "ambassador",
+  },
+  {
+    id: "replit",
+    org: "Replit",
+    role: "Campus Ambassador",
+    period: "May 2026 – Present",
+    current: true,
+    type: "ambassador",
+  },
+  {
+    id: "atomcamp",
+    org: "atomcamp",
+    role: "Campus Ambassador",
+    period: "Feb 2026 – Present",
+    current: true,
+    type: "ambassador",
+    description: "Promoting AI and Automation Skills on Campus.",
+  },
+  {
+    id: "gdg",
+    org: "Google Developer Group GIKI",
+    role: "Core Team Member",
+    period: "Nov 2025 – Present",
+    current: true,
+    type: "community",
+  },
+  {
+    id: "urog-edu",
+    org: "UROG",
+    role: "Officer Education",
+    period: "Dec 2025 – May 2026",
+    type: "community",
+  },
+  {
+    id: "premed-assoc",
+    org: "PreMed.PK",
+    role: "Design Associate",
+    period: "July 2025 – Dec 2025",
+    type: "design",
+    description: "30+ visual assets shipped; 40% lift in digital engagement.",
+  },
+  {
+    id: "devsinc",
+    org: "Devsinc",
+    role: "Campus Ambassador",
+    period: "Feb 2025 – May 2026",
+    type: "ambassador",
+  },
+  {
+    id: "ms-club",
+    org: "Microsoft Club GIKI",
+    role: "Marketing & Design Team Member",
+    period: "Dec 2024 – Present",
+    current: true,
+    type: "marketing",
+  },
+  {
+    id: "acm-design",
+    org: "ACM Student GIKI Chapter",
+    role: "Design Team Member",
+    period: "Feb 2025 – Present",
+    current: true,
+    type: "design",
+  },
+  {
+    id: "premed-intern",
+    org: "PreMed.PK",
+    role: "Design Intern",
+    period: "May 2025 – July 2025",
+    type: "design",
+  },
+  {
+    id: "remotebase",
+    org: "Remotebase",
+    role: "Campus Ambassador",
+    period: "Feb 2025 – July 2025",
+    type: "ambassador",
+  },
+];
 
 export const stats: Stat[] = [
   {
@@ -62,23 +178,23 @@ export const stats: Stat[] = [
     label: "Digital engagement lift on the PreMed.PK assets I designed",
   },
   {
-    value: "10",
+    value: "14",
     suffix: "+",
-    label: "Workshops led or supported across campus societies",
+    label: "Roles across design, marketing, community, and tech",
   },
 ];
 
 export const marqueeWords = [
   "Product Design",
-  "Immersive UI",
-  "Storytelling-based UI",
-  "Wireframing",
-  "Prototyping",
+  "Marketing Director",
+  "AI Intern",
   "Visual Identity",
-  "Dashboards",
+  "Community Builder",
+  "Hackathon Winner",
+  "Campus Ambassador",
   "Graphic Design",
-  "Community Design",
-  "Healthtech",
+  "Dashboard Design",
+  "Storytelling UI",
 ];
 
 export const featuredCaseStudy: CaseStudy = {
@@ -161,23 +277,23 @@ export const awards: Award[] = [
     link: "https://www.figma.com/design/ZZ259rh7azNEfkHnmRLywl/ChainTicket?node-id=0-1&t=EadmwPrVzE99VRTb-1",
   },
   {
-    title: "Microsoft Imagine Cup",
-    org: "EcoBite · food-waste platform",
-    year: "Aug 2025",
-  },
-  {
-    title: "Promoted to Associate",
-    org: "PreMed.PK · Graphic Design",
-    year: "May 2025",
-  },
-  {
-    title: "Student Education Officer",
+    title: "Marketing Director",
     org: "UROG · GIKI",
-    year: "2024 – Present",
+    year: "May 2026 – Present",
+  },
+  {
+    title: "AI Intern",
+    org: "Najoomi",
+    year: "July 2026 – Present",
+  },
+  {
+    title: "Promoted to Design Associate",
+    org: "PreMed.PK",
+    year: "July 2025",
   },
   {
     title: "Core Design & Marketing",
-    org: "Association for Computing Machinery · GIKI",
+    org: "ACM · Microsoft Club · GDG · GIKI",
     year: "2024 – Present",
   },
 ];
@@ -197,25 +313,28 @@ export const techStack: string[] = [
   "Azure",
   "Firebase",
   "Git/GitHub",
+  "NLP/ML",
+  "RAG",
 ];
 
 export const capabilities: string[] = [
   "Product design",
-  "Immersive UI",
-  "Storytelling-based UI",
+  "Marketing strategy",
+  "Community management",
+  "Visual identity & branding",
   "Wireframing & prototyping",
-  "Visual identity",
-  "Dashboard design",
+  "Dashboard & data UI",
   "Graphic design",
-  "Community & outreach",
+  "NLP · ML · AI",
 ];
 
 export const certifications: Certification[] = [
   { name: "AI Agents Intensive", by: "Kaggle · Google" },
   { name: "GitHub Foundations", by: "Microsoft" },
-  { name: "Data Science", by: "DataCamp" },
+  { name: "Intro to Statistics in Python", by: "DataCamp" },
+  { name: "Intermediate SQL", by: "DataCamp" },
+  { name: "Intro to Programming (C++)", by: "Microsoft" },
   { name: "Graphic Design", by: "DigiSkills" },
-  { name: "Hackfest 3.0 Participation", by: "Remotebase" },
 ];
 
 export const testimonials: { quote: string; name: string; role: string }[] = [];

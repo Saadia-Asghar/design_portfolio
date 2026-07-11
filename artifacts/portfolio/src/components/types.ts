@@ -69,6 +69,16 @@ export type Education = {
   years?: string;
 };
 
+export type Experience = {
+  id: string;
+  org: string;
+  role: string;
+  period: string;
+  current?: boolean;
+  type: "design" | "community" | "tech" | "ambassador" | "ai" | "marketing";
+  description?: string;
+};
+
 export type SiteMeta = {
   name: string;
   role: string;
