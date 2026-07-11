@@ -1,682 +1,415 @@
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
-  ArrowDown,
-  ArrowUpRight,
-  Award,
-  BookOpen,
-  Check,
-  Copy,
-  Download,
-  ExternalLink,
-  Github,
-  GraduationCap,
-  Linkedin,
-  Mail,
-  Plus,
-  Sparkles,
-  Star,
-} from "lucide-react";
-import { useRef, useState } from "react";
-import {
-  awards,
-  capabilities,
-  certifications,
-  featuredCaseStudy,
-  featuredCaseStudyImage,
-  marqueeWords,
-  processSteps,
-  seedChapters,
-  siteMeta,
-  stats,
-  techStack,
-  testimonials,
-  tools,
+  awards, capabilities, certifications, featuredCaseStudy, featuredCaseStudyImage,
+  processSteps, seedChapters, siteMeta, stats, techStack, tools,
 } from "./seedData";
 import type { Card, Chapter } from "./types";
-import {
-  Counter,
-  LocalTime,
-  Magnetic,
-  Marquee,
-  RevealText,
-  RotatingWord,
-  SectionLabel,
-  Spotlight,
-} from "./UI";
 import AddDrawer from "./AddDrawer";
 import CustomCursor from "./CustomCursor";
 import CommandPalette from "./CommandPalette";
 
-const STORAGE_KEY = "saadia-portfolio-v5";
+const STORAGE_KEY = "saadia-portfolio-v6";
 
-const accentMap: Record<
-  Chapter["accent"],
-  { chip: string; dot: string; text: string; bg: string; border: string }
-> = {
-  blush: {
-    chip: "bg-blush/40 text-ink border-blush",
-    dot: "bg-[#E9C6B5]",
-    text: "text-[#9B5E4A]",
-    bg: "from-blush/40 via-cream to-cream",
-    border: "border-blush/60",
-  },
-  sage: {
-    chip: "bg-sage/30 text-ink border-sage",
-    dot: "bg-[#A8B5A0]",
-    text: "text-[#5F6F56]",
-    bg: "from-sage/30 via-cream to-cream",
-    border: "border-sage/60",
-  },
-  gold: {
-    chip: "bg-gold/25 text-ink border-gold",
-    dot: "bg-[#C8A24B]",
-    text: "text-[#8A6A20]",
-    bg: "from-gold/25 via-cream to-cream",
-    border: "border-gold/50",
-  },
-  ink: {
-    chip: "bg-ink/10 text-ink border-ink/40",
-    dot: "bg-ink",
-    text: "text-ink",
-    bg: "from-ink/10 via-cream to-cream",
-    border: "border-ink/30",
-  },
-};
+/* ── helpers ── */
+function useLocalTime(tz = "Asia/Karachi") {
+  const [t, setT] = useState("");
+  useEffect(() => {
+    const fmt = () => setT(new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz }).format(new Date()));
+    fmt(); const id = setInterval(fmt, 30_000); return () => clearInterval(id);
+  }, [tz]);
+  return t;
+}
 
-export default function Portfolio() {
-  const [chapters, setChapters] = useState<Chapter[]>(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Chapter[];
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {}
-    return seedChapters;
-  });
-  const [drawerOpen, setDrawerOpen] = useState(false);
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    (localStorage.getItem("sa-theme") as "light" | "dark") ?? "light"
+  );
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("sa-theme", theme);
+  }, [theme]);
+  return { theme, toggle: () => setTheme(t => t === "light" ? "dark" : "light"), set: setTheme };
+}
 
-  const addCard = (chapterId: string, card: Card) => {
-    setChapters((prev) => {
-      const next = prev.map((c) => (c.id === chapterId ? { ...c, cards: [...c.cards, card] } : c));
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
-      return next;
-    });
-  };
-  const addChapter = (chapter: Chapter) => {
-    setChapters((prev) => {
-      const next = [...prev, chapter];
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
-      return next;
-    });
-  };
-  const deleteCard = (chapterId: string, cardId: string) =>
-    setChapters((prev) => {
-      const next = prev.map((c) =>
-        c.id === chapterId ? { ...c, cards: c.cards.filter((k) => k.id !== cardId) } : c
-      );
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
-      return next;
-    });
-
-  const jumps = [
-    { id: "top", label: "Go to top", hint: "Hero", hash: "#top" },
-    { id: "work", label: "Selected Work", hint: "Chapters", hash: "#work" },
-    { id: "case", label: "Featured Case Study — Vyrothon", hint: "1st place", hash: "#case" },
-    { id: "process", label: "How I Work", hint: "Process", hash: "#process" },
-    { id: "awards", label: "Awards & Recognition", hint: "Credentials", hash: "#awards" },
-    { id: "about", label: "About & Currently", hint: "Personal", hash: "#about" },
-    { id: "contact", label: "Contact", hint: "Let's talk", hash: "#contact" },
-    {
-      id: "resume",
-      label: "Download Résumé",
-      hint: "PDF",
-      action: () => window.open(siteMeta.resume, "_blank"),
-    },
-    {
-      id: "linkedin",
-      label: "Open LinkedIn",
-      hint: "Social",
-      action: () => window.open(siteMeta.linkedin, "_blank"),
-    },
-    ...(siteMeta.github
-      ? [
-          {
-            id: "github",
-            label: "Open GitHub",
-            hint: "Code",
-            action: () => window.open(siteMeta.github!, "_blank"),
-          },
-        ]
-      : []),
-    ...(featuredCaseStudy.link
-      ? [
-          {
-            id: "figma",
-            label: "Open Vyrothon design on Figma",
-            hint: "1st place",
-            action: () => window.open(featuredCaseStudy.link!, "_blank"),
-          },
-        ]
-      : []),
-    {
-      id: "add",
-      label: "Add a new design card",
-      hint: "Drawer",
-      action: () => setDrawerOpen(true),
-    },
-  ];
+/* ── Loading screen ── */
+function LoadingScreen({ done }: { done: boolean }) {
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    let v = 0;
+    const id = setInterval(() => {
+      v += Math.random() * 18;
+      if (v >= 100) { v = 100; clearInterval(id); }
+      setPct(Math.min(100, Math.round(v)));
+    }, 60);
+    return () => clearInterval(id);
+  }, []);
 
   return (
-    <main id="top" className="relative">
-      <CustomCursor />
-      <TopNav jumps={jumps} onAdd={() => setDrawerOpen(true)} />
-
-      <Hero />
-      <MarqueeStrip />
-      <Manifesto />
-      <Stats />
-      <FeaturedCaseStudy />
-      <SelectedWork chapters={chapters} onDelete={deleteCard} />
-      <Process />
-      <Awards />
-      <ToolsAndCapabilities />
-      <About />
-      <Testimonials />
-      <Contact />
-      <Colophon />
-
-      <motion.button
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.6, type: "spring" }}
-        onClick={() => setDrawerOpen(true)}
-        className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-40 h-16 w-16 rounded-full bg-ink text-paper shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] grid place-items-center hover:scale-105 active:scale-95 transition"
-        aria-label="Add new design"
-      >
-        <Plus size={26} />
-      </motion.button>
-
-      <AddDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        chapters={chapters}
-        onAddCard={addCard}
-        onAddChapter={addChapter}
-      />
-    </main>
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{ opacity: done ? 0 : 1 }}
+      transition={{ duration: 0.55, ease: "easeInOut" }}
+      onAnimationComplete={() => {}}
+      className="loading-screen fixed inset-0 z-[500] flex flex-col items-center justify-center gap-5"
+      style={{ background: "var(--c-bg)", pointerEvents: done ? "none" : "all" }}
+    >
+      <div className="w-64 flex flex-col gap-2">
+        <div className="flex justify-between text-xs tracking-widest" style={{ color: "var(--c-muted)" }}>
+          <span>LOADING...</span>
+          <span>{pct}%</span>
+        </div>
+        <div className="w-full h-px" style={{ background: "var(--c-border)" }}>
+          <motion.div className="h-full" style={{ background: "var(--c-fg)", width: `${pct}%`, transition: "width 0.15s linear" }} />
+        </div>
+      </div>
+      <div className="flex gap-6 text-xs tracking-widest mt-4" style={{ color: "var(--c-muted)" }}>
+        <a href={siteMeta.linkedin} target="_blank" rel="noreferrer" className="arrow-link" style={{ color: "var(--c-muted)" }}>LinkedIn ↗</a>
+        {siteMeta.github && <a href={siteMeta.github} target="_blank" rel="noreferrer" className="arrow-link" style={{ color: "var(--c-muted)" }}>GitHub ↗</a>}
+      </div>
+    </motion.div>
   );
 }
 
-/* ================================================================== */
-/* TOP NAV                                                             */
-/* ================================================================== */
+/* ── MAIN ── */
+export default function Portfolio() {
+  const [chapters, setChapters] = useState<Chapter[]>(() => {
+    try { const r = localStorage.getItem(STORAGE_KEY); if (r) { const p = JSON.parse(r) as Chapter[]; if (Array.isArray(p) && p.length) return p; } } catch {}
+    return seedChapters;
+  });
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const { theme, toggle } = useTheme();
 
-function TopNav({
-  jumps,
-  onAdd,
-}: {
-  jumps: Parameters<typeof CommandPalette>[0]["jumps"];
-  onAdd: () => void;
+  useEffect(() => { const id = setTimeout(() => setLoaded(true), 1600); return () => clearTimeout(id); }, []);
+
+  const save = (next: Chapter[]) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {} };
+  const addCard = (cid: string, card: Card) => setChapters(p => { const n = p.map(c => c.id === cid ? { ...c, cards: [...c.cards, card] } : c); save(n); return n; });
+  const addChapter = (ch: Chapter) => setChapters(p => { const n = [...p, ch]; save(n); return n; });
+  const deleteCard = (cid: string, kid: string) => setChapters(p => { const n = p.map(c => c.id === cid ? { ...c, cards: c.cards.filter(k => k.id !== kid) } : c); save(n); return n; });
+
+  const jumps = [
+    { id: "top", label: "Top", hint: "Hero", hash: "#top" },
+    { id: "work", label: "Selected Work", hint: "Chapters", hash: "#work" },
+    { id: "case", label: "Featured Case Study", hint: "Vyrothon", hash: "#case" },
+    { id: "process", label: "How I Work", hint: "Process", hash: "#process" },
+    { id: "awards", label: "Recognition", hint: "Awards", hash: "#awards" },
+    { id: "about", label: "About", hint: "Personal", hash: "#about" },
+    { id: "contact", label: "Contact", hint: "Let's talk", hash: "#contact" },
+    { id: "resume", label: "Download Résumé", hint: "PDF", action: () => window.open(siteMeta.resume, "_blank") },
+    { id: "linkedin", label: "LinkedIn", hint: "Social", action: () => window.open(siteMeta.linkedin, "_blank") },
+    ...(siteMeta.github ? [{ id: "github", label: "GitHub", hint: "Code", action: () => window.open(siteMeta.github!, "_blank") }] : []),
+    { id: "add", label: "Add a design card", hint: "Drawer", action: () => setDrawerOpen(true) },
+    { id: "theme", label: `Switch to ${theme === "light" ? "dark" : "light"} mode`, hint: "Theme", action: toggle },
+  ];
+
+  return (
+    <>
+      <LoadingScreen done={loaded} />
+
+      <CustomCursor />
+
+      {/* Fixed outer frame */}
+      <div className="outer-frame" />
+
+      {/* Fixed clock top-right */}
+      <LiveClock />
+
+      {/* Fixed theme toggle */}
+      <div className="fixed top-5 right-16 z-50 flex gap-1">
+        {(["light", "dark"] as const).map(c => (
+          <button key={c} onClick={() => document.documentElement.setAttribute("data-theme", c) || localStorage.setItem("sa-theme", c) || toggle()}
+            className="theme-btn" data-color={c} aria-label={`${c} mode`}
+            style={{ background: theme === c ? "var(--c-fg)" : "transparent" }}
+          />
+        ))}
+      </div>
+
+      {/* + FAB */}
+      <motion.button
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
+        onClick={() => setDrawerOpen(true)}
+        className="fixed bottom-8 right-8 z-40 text-xs tracking-widest uppercase px-4 py-2 transition"
+        style={{ border: "1px solid var(--c-border)", background: "var(--c-fg)", color: "var(--c-bg)", fontFamily: "inherit" }}
+        aria-label="Add design"
+      >
+        + ADD
+      </motion.button>
+
+      <div id="top" style={{ opacity: loaded ? 1 : 0, transition: "opacity 0.4s ease 1.8s" }}>
+        <Nav jumps={jumps} onAdd={() => setDrawerOpen(true)} theme={theme} onToggleTheme={toggle} />
+        <Hero />
+        <BarcodeStrip text="SAADIA·ASGHAR·PRODUCT·DESIGNER·ISLAMABAD·2026" />
+        <Manifesto />
+        <StatsRow />
+        <BarcodeStrip text="VYROTHON·1ST·PLACE·TOP·5·NATIONAL·MIT·HACK·NATION·TOP·10·BASED·PAKISTAN·3RD" />
+        <FeaturedCase />
+        <Work chapters={chapters} onDelete={deleteCard} />
+        <Process />
+        <Recognition />
+        <Tools />
+        <About />
+        <Contact />
+        <Footer />
+      </div>
+
+      <AddDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} chapters={chapters} onAddCard={addCard} onAddChapter={addChapter} />
+    </>
+  );
+}
+
+/* ── LIVE CLOCK ── */
+function LiveClock() {
+  const t = useLocalTime("Asia/Karachi");
+  return (
+    <div className="fixed top-5 right-32 z-50 text-xs tracking-widest select-none hidden md:block" style={{ color: "var(--c-muted)", fontFamily: "inherit" }}>
+      {t || "—:—"}
+    </div>
+  );
+}
+
+/* ── NAV ── */
+function Nav({ jumps, onAdd, theme, onToggleTheme }: {
+  jumps: Parameters<typeof CommandPalette>[0]["jumps"]; onAdd: () => void; theme: string; onToggleTheme: () => void;
 }) {
   const { scrollY } = useScroll();
-  const pad = useTransform(scrollY, [0, 200], [28, 14]);
-  const opacity = useTransform(scrollY, [0, 120], [0, 1]);
+  const border = useTransform(scrollY, [0, 80], ["color-mix(in srgb, var(--c-border) 0%, transparent)", "var(--c-border)"]);
 
   return (
     <motion.header
-      style={{ paddingTop: pad, paddingBottom: pad }}
-      className="sticky top-0 z-50 px-6 md:px-10"
+      className="sticky top-0 z-50 px-8 py-4 flex items-center justify-between"
+      style={{ background: "var(--c-bg)", borderBottom: `1px solid`, borderColor: border, transition: "border-color 0.2s" }}
     >
-      <motion.div
-        style={{ opacity }}
-        className="absolute inset-0 -z-10 bg-paper/80 backdrop-blur-md border-b border-ink/10"
-      />
-      <div className="flex items-center justify-between gap-4">
-        <a href="#top" className="flex items-center gap-3 group">
-          <div className="h-9 w-9 rounded-full bg-ink text-paper grid place-items-center font-serif-display text-lg group-hover:scale-105 transition">
-            S
-          </div>
-          <div className="leading-tight hidden sm:block">
-            <div className="font-serif-display text-lg">{siteMeta.name}</div>
-            <div className="text-[10px] uppercase tracking-[0.3em] text-ink/60">
-              {siteMeta.role} · Portfolio
-            </div>
-          </div>
+      <a href="#top" className="text-sm font-medium tracking-widest flex items-center gap-3" style={{ fontFamily: "inherit" }}>
+        <span className="text-xs px-1.5 py-0.5" style={{ border: "1px solid var(--c-border)" }}>SA</span>
+        <span className="hidden sm:inline">SAADIA ASGHAR</span>
+      </a>
+
+      <nav className="hidden lg:flex items-center gap-6 text-xs tracking-widest uppercase">
+        {[["WORK","#work"],["CASE","#case"],["PROCESS","#process"],["AWARDS","#awards"],["ABOUT","#about"],["CONTACT","#contact"]].map(([l,h]) => (
+          <a key={h} href={h} className="transition-opacity hover:opacity-60" style={{ fontFamily: "inherit" }}>{l}</a>
+        ))}
+      </nav>
+
+      <div className="flex items-center gap-3">
+        <CommandPalette jumps={jumps} />
+        <a href={siteMeta.resume} download
+          className="text-xs tracking-widest uppercase px-3 py-1.5 transition"
+          style={{ border: "1px solid var(--c-border)", fontFamily: "inherit", color: "var(--c-fg)" }}>
+          RÉSUMÉ
         </a>
-
-        <nav className="hidden lg:flex items-center gap-1 text-xs uppercase tracking-[0.22em]">
-          {[
-            ["Work", "#work"],
-            ["Case", "#case"],
-            ["Process", "#process"],
-            ["Awards", "#awards"],
-            ["About", "#about"],
-            ["Contact", "#contact"],
-          ].map(([l, h]) => (
-            <a
-              key={h}
-              href={h}
-              className="px-3 py-2 rounded-full hover:bg-ink/5 transition"
-            >
-              {l}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <CommandPalette jumps={jumps} />
-          <Magnetic strength={0.2}>
-            <a
-              href={siteMeta.resume}
-              download
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-ink text-paper text-xs uppercase tracking-[0.22em] hover:bg-ink/90 transition"
-            >
-              <Download size={13} /> <span className="hidden sm:inline">Résumé</span>
-            </a>
-          </Magnetic>
-        </div>
       </div>
     </motion.header>
   );
 }
 
-/* ================================================================== */
-/* HERO                                                                */
-/* ================================================================== */
-
+/* ── HERO ── */
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 80]);
 
   return (
-    <section ref={ref} className="relative min-h-[92vh] overflow-hidden">
-      <Spotlight />
-
-      <div className="relative z-10 px-6 md:px-12 pt-6 md:pt-8 pb-24">
-        <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-ink/55">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6E8D5E] opacity-60" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5F7D4F]" />
-            </span>
-            <span>Here to</span>
-            <RotatingWord
-              words={siteMeta.intentions ?? ["create"]}
-              className="text-ink font-medium"
-            />
-          </div>
-          <div className="hidden md:flex items-center gap-4">
-            <span>{siteMeta.location}</span>
-            <span>·</span>
-            <LocalTime />
-            <span>·</span>
-            <span>Vol. I · MMXXVI</span>
-          </div>
+    <section ref={ref} className="relative px-8 pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden">
+      <motion.div style={{ y }} className="max-w-6xl mx-auto">
+        {/* Status row */}
+        <div className="flex items-center gap-4 mb-12 text-[11px] tracking-widest uppercase" style={{ color: "var(--c-muted)" }}>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#4ade80" }} />
+            AVAILABLE
+          </span>
+          <span>·</span>
+          <span>{siteMeta.location}</span>
+          <span>·</span>
+          <span>B.SC. DATA SCIENCE · GIKI</span>
         </div>
 
-        <motion.div style={{ y, opacity }} className="mt-14 md:mt-24">
-          <div className="flex items-center gap-4 mb-6 md:mb-10">
-            <span className="h-px w-16 bg-ink/40" />
-            <span className="text-[11px] uppercase tracking-[0.35em] text-ink/60">
-              A designer's book of work — {new Date().getFullYear()} edition
-            </span>
-          </div>
+        {/* Main heading */}
+        <h1 className="font-medium leading-none tracking-tighter text-[clamp(3.5rem,12vw,10rem)] mb-8">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.9 }}
+            className="block"
+          >SAADIA</motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 2.05 }}
+            className="block"
+            style={{ color: "var(--c-muted)" }}
+          >ASGHAR.</motion.span>
+        </h1>
 
-          <h1 className="font-serif-display leading-[0.92] tracking-tight text-[clamp(3.5rem,14vw,13rem)] pb-[0.05em]">
-            <RevealText text="Saadia" as="span" className="block" />
-            <RevealText
-              text="Asghar."
-              as="em"
-              className="block italic font-light text-ink/90"
-              delay={0.15}
-            />
-          </h1>
-
-          <div className="mt-10 grid md:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
-            <div>
-              <RevealText
-                text={siteMeta.tagline}
-                as="p"
-                className="font-serif-display italic text-2xl md:text-3xl leading-snug text-ink/80 max-w-xl"
-                delay={0.4}
-              />
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Magnetic>
-                  <a
-                    href="#work"
-                    className="group flex items-center gap-2 px-6 py-3.5 rounded-full bg-ink text-paper text-sm font-medium hover:bg-ink/90 transition"
-                  >
-                    View Selected Work
-                    <ArrowDown
-                      size={15}
-                      className="transition group-hover:translate-y-0.5"
-                    />
-                  </a>
-                </Magnetic>
-                <Magnetic>
-                  <a
-                    href="#case"
-                    className="group flex items-center gap-2 px-6 py-3.5 rounded-full border border-ink/25 bg-cream text-sm font-medium hover:bg-ink/5 transition"
-                  >
-                    <Sparkles size={14} />
-                    Read the Vyrothon case study
-                    <ArrowUpRight
-                      size={14}
-                      className="transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
-                  </a>
-                </Magnetic>
-              </div>
-
-              <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.25em] text-ink/55">
-                <span className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#C8A24B]" />
-                  Top 5 · Vyrothon · 500+ nationally
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#E9C6B5]" />
-                  Top 10 · MIT Hack Nation
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#A8B5A0]" />
-                  3rd · BASED Pakistan
-                </span>
-              </div>
-
-              <a
-                href="#case"
-                className="group mt-10 flex items-center gap-4 rounded-2xl border border-ink/15 bg-cream/85 backdrop-blur p-3 hover:bg-ink hover:text-paper transition max-w-md shadow-card"
-              >
-                <div className="relative h-16 w-20 rounded-lg overflow-hidden bg-ink shrink-0">
-                  <img
-                    src={featuredCaseStudyImage}
-                    alt="Vyrothon prototype"
-                    className="h-full w-full object-cover transition group-hover:scale-105"
-                  />
-                  <div className="absolute top-1 left-1 h-5 px-1.5 rounded-full bg-gold/95 text-[9px] uppercase tracking-[0.2em] text-ink flex items-center gap-1">
-                    <Award size={9} /> 1st
-                  </div>
-                </div>
-                <div className="flex-1 leading-tight">
-                  <div className="text-[10px] uppercase tracking-[0.25em] opacity-60">
-                    Featured case study
-                  </div>
-                  <div className="mt-1 font-serif-display text-lg leading-snug">
-                    Vyrothon — Product Design Submission
-                  </div>
-                </div>
-                <ArrowDown
-                  size={16}
-                  className="opacity-50 -rotate-90 group-hover:opacity-100 transition shrink-0"
-                />
+        {/* Subheading grid */}
+        <div className="grid md:grid-cols-2 gap-8 mt-10 items-end">
+          <div>
+            <p className="text-sm md:text-base leading-relaxed max-w-lg" style={{ color: "var(--c-muted)" }}>
+              {siteMeta.tagline}
+            </p>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <a href="#work"
+                className="text-xs tracking-widest uppercase px-5 py-2.5 transition"
+                style={{ background: "var(--c-fg)", color: "var(--c-bg)", fontFamily: "inherit" }}>
+                VIEW WORK →
+              </a>
+              <a href="#case"
+                className="text-xs tracking-widest uppercase px-5 py-2.5 transition"
+                style={{ border: "1px solid var(--c-border)", fontFamily: "inherit", color: "var(--c-fg)" }}>
+                VYROTHON CASE ↓
               </a>
             </div>
-
-            <div className="relative">
-              <div className="aspect-[5/6] rounded-[22px] overflow-hidden relative border border-ink/10 shadow-card">
-                <div className="absolute inset-0 bg-gradient-to-br from-blush via-cream to-sage/60" />
-
-                <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/65">
-                  <span>※ A book of selected work</span>
-                  <span>First Ed.</span>
-                </div>
-
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center text-center px-6">
-                  <div className="font-serif-display italic text-[clamp(13rem,32vw,22rem)] leading-[0.78] text-ink/90 select-none pb-[0.18em] -mb-[0.18em]">
-                    S.
-                  </div>
-                  <div className="mt-4 font-serif-display italic text-2xl md:text-3xl text-ink/70 leading-none pb-[0.18em] -mb-[0.18em]">
-                    Asghar
-                  </div>
-                  <div className="mt-6 flex items-center justify-center gap-3 text-[10px] uppercase tracking-[0.4em] text-ink/55">
-                    <span className="h-px w-8 bg-ink/30" />
-                    Volume · I
-                    <span className="h-px w-8 bg-ink/30" />
-                  </div>
-                  <div className="mt-2 font-serif-display italic text-sm text-ink/55">
-                    Designer · Storyteller
-                  </div>
-                </div>
-
-                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-ink/60">
-                  <span>{siteMeta.location}</span>
-                  <span>MMXXVI</span>
-                </div>
-
-                <div className="absolute inset-5 rounded-[16px] border border-ink/15 pointer-events-none" />
-              </div>
-            </div>
           </div>
-        </motion.div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.4em] text-ink/50">
-          <span>Scroll to read</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ArrowDown size={14} />
-          </motion.div>
+          {/* Stats sidebar */}
+          <div className="grid grid-cols-3 divide-x" style={{ borderColor: "var(--c-border)", border: "1px solid var(--c-border)" }}>
+            {[
+              { v: "500+", l: "Vyrothon\nApplicants" },
+              { v: "Top 5", l: "National\nFinalist" },
+              { v: "Top 10", l: "MIT Hack\nNation" },
+            ].map((s, i) => (
+              <div key={i} className="p-4" style={{ borderColor: "var(--c-border)" }}>
+                <div className="text-2xl font-medium">{s.v}</div>
+                <div className="text-[10px] tracking-widest uppercase mt-1 whitespace-pre-line leading-snug" style={{ color: "var(--c-muted)" }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
         </div>
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-8 text-[10px] tracking-widest uppercase flex items-center gap-3" style={{ color: "var(--c-muted)" }}>
+        <motion.span animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>↓</motion.span>
+        SCROLL
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/* MARQUEE                                                             */
-/* ================================================================== */
-
-function MarqueeStrip() {
+/* ── BARCODE STRIP ── */
+function BarcodeStrip({ text }: { text: string }) {
   return (
-    <section className="border-y border-ink/15 bg-ink text-paper py-5 md:py-6 overflow-hidden">
-      <Marquee
-        items={marqueeWords}
-        speed={45}
-        className="font-serif-display italic text-3xl md:text-5xl"
-      />
-    </section>
+    <div className="py-3 overflow-hidden flex items-center" style={{ borderTop: "1px solid var(--c-border)", borderBottom: "1px solid var(--c-border)", background: "var(--c-surface)" }}>
+      <div className="flex items-center gap-8 whitespace-nowrap px-8">
+        <span className="barcode-text text-5xl select-none" aria-hidden style={{ color: "var(--c-fg)" }}>{text}</span>
+        <span className="text-[10px] tracking-[0.5em] uppercase shrink-0" style={{ color: "var(--c-muted)" }}>{text.replace(/·/g, " ")}</span>
+        <span className="barcode-text text-5xl select-none" aria-hidden style={{ color: "var(--c-fg)" }}>{text}</span>
+        <span className="text-[10px] tracking-[0.5em] uppercase shrink-0" style={{ color: "var(--c-muted)" }}>{text.replace(/·/g, " ")}</span>
+      </div>
+    </div>
   );
 }
 
-/* ================================================================== */
-/* MANIFESTO                                                           */
-/* ================================================================== */
-
+/* ── MANIFESTO ── */
 function Manifesto() {
   return (
-    <section className="px-6 md:px-12 py-28 md:py-40">
-      <div className="mx-auto max-w-6xl">
-        <SectionLabel roman="I" title="Manifesto" />
-        <div className="mt-12 grid md:grid-cols-[1fr_0.8fr] gap-12 items-start">
-          <div>
-            <RevealText
-              text="I believe the best products feel like good stationery — calm, confident, and quietly delightful."
-              className="font-serif-display text-[clamp(2rem,5vw,4rem)] leading-[1.08] tracking-tight"
-            />
-            <div className="chapter-rule w-28 my-10" />
-            <p className="text-ink/75 leading-relaxed text-lg max-w-xl drop-cap">
-              {siteMeta.bio}
-            </p>
-          </div>
-
-          <aside className="md:border-l border-ink/15 md:pl-10">
-            <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-3">
-              Principles
-            </div>
-            <ul className="space-y-3 font-serif-display italic text-xl leading-snug">
-              {[
-                "Clarity is a form of kindness.",
-                "Design like a writer — every pixel earns its place.",
-                "Ship, watch, edit. Great work is a second draft.",
-                "A system beats a stroke of genius, every time.",
-              ].map((p, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="font-sans not-italic text-[11px] tracking-[0.3em] text-ink/50 pt-1">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>{p}</span>
-                </li>
-              ))}
-            </ul>
-          </aside>
+    <section className="px-8 py-20 md:py-28">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-[1fr_auto] gap-12 items-start">
+        <div>
+          <Row label="00 · MANIFESTO" />
+          <p className="text-2xl md:text-4xl leading-tight tracking-tight font-medium mt-8 max-w-3xl">
+            "I believe the best products feel like good stationery — calm, confident, and quietly delightful."
+          </p>
         </div>
-      </div>
-    </section>
-  );
-}
-
-/* ================================================================== */
-/* STATS                                                               */
-/* ================================================================== */
-
-function Stats() {
-  return (
-    <section className="border-y border-ink/15 bg-cream/60">
-      <div className="mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-ink/15">
-          {stats.map((s, i) => (
-            <div key={i} className="px-4 md:px-8 first:pl-0 last:pr-0">
-              <div className="font-serif-display text-[clamp(2.5rem,6vw,5rem)] leading-none">
-                <Counter value={s.value} prefix={s.prefix} suffix={s.suffix} />
-              </div>
-              <div className="mt-3 text-[11px] uppercase tracking-[0.22em] text-ink/60 leading-relaxed">
-                {s.label}
-              </div>
+        <aside className="text-sm space-y-2 min-w-[220px] mt-8 md:mt-14">
+          <div className="text-[10px] tracking-widest uppercase mb-4" style={{ color: "var(--c-muted)" }}>PRINCIPLES</div>
+          {[
+            "Clarity is a form of kindness.",
+            "Every pixel earns its place.",
+            "Ship, watch, edit.",
+            "Systems beat genius.",
+          ].map((p, i) => (
+            <div key={i} className="flex gap-3">
+              <span className="text-[10px] tracking-widest mt-0.5" style={{ color: "var(--c-muted)" }}>0{i + 1}</span>
+              <span style={{ color: "var(--c-muted)" }}>{p}</span>
             </div>
           ))}
-        </div>
+        </aside>
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/* FEATURED CASE STUDY                                                 */
-/* ================================================================== */
-
-function FeaturedCaseStudy() {
+/* ── STATS ROW ── */
+function StatsRow() {
   return (
-    <section id="case" className="px-6 md:px-12 py-28 md:py-40 relative">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <SectionLabel roman="II" title="Featured Case Study" />
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold/20 border border-gold/40 text-[11px] uppercase tracking-[0.25em] text-[#8A6A20]">
-            <Award size={13} />
-            {featuredCaseStudy.award}
+    <section style={{ borderTop: "1px solid var(--c-border)", borderBottom: "1px solid var(--c-border)", background: "var(--c-surface)" }}>
+      <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x" style={{ borderColor: "var(--c-border)" }}>
+        {stats.map((s, i) => (
+          <div key={i} className="px-8 py-10">
+            <div className="text-4xl md:text-5xl font-medium tracking-tight">{s.prefix}{s.value}{s.suffix}</div>
+            <div className="text-[10px] tracking-widest uppercase mt-2 leading-relaxed" style={{ color: "var(--c-muted)" }}>{s.label}</div>
           </div>
-        </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-        <div className="mt-14 grid lg:grid-cols-[1.1fr_0.9fr] gap-10 md:gap-14 items-start">
+/* ── FEATURED CASE ── */
+function FeaturedCase() {
+  return (
+    <section id="case" className="px-8 py-20 md:py-28">
+      <div className="max-w-6xl mx-auto">
+        <Row label="02 · FEATURED CASE STUDY" />
+        <div className="grid lg:grid-cols-[1fr_0.8fr] gap-12 mt-10">
           <div>
-            <h3 className="font-serif-display text-[clamp(2.25rem,5vw,4rem)] leading-[1.02]">
-              {featuredCaseStudy.title}
-            </h3>
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-[11px] uppercase tracking-[0.25em] text-ink/55">
+            <div className="text-[10px] tracking-widest uppercase mb-2 flex items-center gap-3" style={{ color: "var(--c-muted)" }}>
+              <span className="px-2 py-0.5 text-[10px]" style={{ border: "1px solid var(--c-border)" }}>AWARD · 1ST PLACE</span>
+              {featuredCaseStudy.year}
+            </div>
+            <h2 className="text-3xl md:text-5xl font-medium leading-tight tracking-tight mt-4">{featuredCaseStudy.title}</h2>
+            <div className="text-xs tracking-widest mt-3 flex flex-wrap gap-x-4 gap-y-1" style={{ color: "var(--c-muted)" }}>
               <span>{featuredCaseStudy.client}</span>
-              <span>·</span>
-              <span>{featuredCaseStudy.year}</span>
               <span>·</span>
               <span>{featuredCaseStudy.role}</span>
             </div>
+            <p className="mt-8 leading-relaxed" style={{ color: "var(--c-muted)" }}>{featuredCaseStudy.summary}</p>
 
-            <p className="mt-8 font-serif-display italic text-2xl text-ink/80 leading-snug max-w-xl">
-              {featuredCaseStudy.summary}
-            </p>
-
-            {featuredCaseStudy.link && (
-              <div className="mt-6">
-                <Magnetic strength={0.2}>
-                  <a
-                    href={featuredCaseStudy.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink hover:text-paper transition"
-                  >
-                    <ExternalLink size={14} />
-                    View the design on Figma
-                    <ArrowUpRight size={13} />
-                  </a>
-                </Magnetic>
-              </div>
-            )}
-
-            <div className="mt-10 space-y-8">
-              <CaseBlock title="The Problem" body={featuredCaseStudy.problem} />
+            <div className="mt-8 space-y-6">
+              <Block title="THE PROBLEM" body={featuredCaseStudy.problem} />
               <div>
-                <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-3">
-                  The Approach
-                </div>
-                <ol className="space-y-3">
+                <div className="text-[10px] tracking-widest uppercase mb-3" style={{ color: "var(--c-muted)" }}>THE APPROACH</div>
+                <ol className="space-y-2">
                   {featuredCaseStudy.approach.map((a, i) => (
-                    <li key={i} className="flex gap-4">
-                      <span className="font-serif-display text-xl text-ink/40 leading-none pt-1.5">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <p className="text-ink/80 leading-relaxed">{a}</p>
+                    <li key={i} className="flex gap-4 text-sm leading-relaxed">
+                      <span className="shrink-0 text-[10px] tracking-widest mt-0.5" style={{ color: "var(--c-muted)" }}>0{i + 1}</span>
+                      <span style={{ color: "var(--c-muted)" }}>{a}</span>
                     </li>
                   ))}
                 </ol>
               </div>
-              <CaseBlock title="The Outcome" body={featuredCaseStudy.outcome} />
+              <Block title="THE OUTCOME" body={featuredCaseStudy.outcome} />
             </div>
+
+            {featuredCaseStudy.link && (
+              <a href={featuredCaseStudy.link} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-2 mt-8 text-xs tracking-widest uppercase px-4 py-2 transition"
+                style={{ border: "1px solid var(--c-border)", fontFamily: "inherit", color: "var(--c-fg)" }}>
+                VIEW ON FIGMA ↗
+              </a>
+            )}
           </div>
 
-          <div className="lg:sticky lg:top-28 space-y-6">
-            <a
-              href={featuredCaseStudy.link ?? "#"}
-              target={featuredCaseStudy.link ? "_blank" : undefined}
-              rel={featuredCaseStudy.link ? "noreferrer" : undefined}
-              className="group relative block aspect-[4/5] rounded-[22px] overflow-hidden border border-ink/10 shadow-card bg-gradient-to-br from-ink/5 via-cream to-cream"
-            >
-              {featuredCaseStudyImage ? (
-                <img
-                  src={featuredCaseStudyImage}
-                  alt={featuredCaseStudy.title}
-                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
-                />
-              ) : (
-                <div className="absolute inset-0 grid place-items-center bg-gradient-to-br from-gold/30 via-cream to-blush/40">
-                  <div className="text-center px-6">
-                    <Award className="mx-auto mb-6 text-[#8A6A20]" size={44} />
-                    <div className="font-serif-display text-5xl leading-tight">1st</div>
-                    <div className="font-serif-display italic text-2xl -mt-1">Product Design Round</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] uppercase tracking-[0.3em]">
-                <span className="px-2.5 py-1 rounded-full bg-paper/90 text-ink/75 backdrop-blur">
-                  Case No. 01
+          {/* Image */}
+          <div className="lg:sticky lg:top-24">
+            <a href={featuredCaseStudy.link ?? "#"} target={featuredCaseStudy.link ? "_blank" : undefined} rel="noreferrer"
+              className="group relative block overflow-hidden" style={{ border: "1px solid var(--c-border)" }}>
+              {featuredCaseStudyImage
+                ? <img src={featuredCaseStudyImage} alt={featuredCaseStudy.title} className="w-full h-80 object-cover transition duration-700 group-hover:scale-[1.03]" />
+                : <div className="w-full h-80 flex items-center justify-center text-4xl font-medium" style={{ background: "var(--c-surface)" }}>1ST</div>
+              }
+              <div className="absolute top-3 left-3">
+                <span className="text-[10px] tracking-widest uppercase px-2 py-1" style={{ background: "var(--c-fg)", color: "var(--c-bg)" }}>
+                  VYROTHON · 1ST
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-ink/90 text-paper backdrop-blur">
-                  Figma
-                </span>
-              </div>
-
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent flex items-end justify-between gap-3">
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold/95 text-ink text-[10px] uppercase tracking-[0.25em] shadow-card">
-                  <Award size={11} />
-                  1st · Product Design
-                </div>
-                {featuredCaseStudy.link && (
-                  <div className="h-9 w-9 rounded-full bg-paper text-ink grid place-items-center transition opacity-90 group-hover:opacity-100 group-hover:scale-105">
-                    <ArrowUpRight size={15} />
-                  </div>
-                )}
               </div>
             </a>
 
             {featuredCaseStudy.metrics && (
-              <div className="grid grid-cols-2 gap-0 rounded-2xl overflow-hidden border border-ink/10 divide-x divide-y divide-ink/10">
+              <div className="grid grid-cols-2 divide-x divide-y mt-0" style={{ border: "1px solid var(--c-border)", borderTop: "none", borderColor: "var(--c-border)" }}>
                 {featuredCaseStudy.metrics.map((m, i) => (
-                  <div key={i} className="p-5 bg-cream">
-                    <div className="font-serif-display text-3xl leading-none">{m.value}</div>
-                    <div className="mt-2 text-[10px] uppercase tracking-[0.25em] text-ink/55">{m.label}</div>
+                  <div key={i} className="px-5 py-4" style={{ borderColor: "var(--c-border)" }}>
+                    <div className="text-2xl font-medium">{m.value}</div>
+                    <div className="text-[10px] tracking-widest uppercase mt-1" style={{ color: "var(--c-muted)" }}>{m.label}</div>
                   </div>
                 ))}
               </div>
@@ -688,87 +421,59 @@ function FeaturedCaseStudy() {
   );
 }
 
-function CaseBlock({ title, body }: { title: string; body: string }) {
+function Block({ title, body }: { title: string; body: string }) {
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-3">{title}</div>
-      <p className="text-ink/80 leading-relaxed">{body}</p>
+      <div className="text-[10px] tracking-widest uppercase mb-2" style={{ color: "var(--c-muted)" }}>{title}</div>
+      <p className="text-sm leading-relaxed" style={{ color: "var(--c-muted)" }}>{body}</p>
     </div>
   );
 }
 
-/* ================================================================== */
-/* SELECTED WORK                                                       */
-/* ================================================================== */
-
-function SelectedWork({
-  chapters,
-  onDelete,
-}: {
-  chapters: Chapter[];
-  onDelete: (chapterId: string, cardId: string) => void;
-}) {
+/* ── WORK / CHAPTERS ── */
+function Work({ chapters, onDelete }: { chapters: Chapter[]; onDelete: (cid: string, kid: string) => void }) {
   return (
-    <section id="work" className="px-6 md:px-12 py-28 md:py-40 bg-paper/60">
-      <div className="mx-auto max-w-6xl">
-        <SectionLabel
-          roman="III"
-          title="Selected Work"
-          kicker="Four chapters. One throughline: design that respects the reader."
-        />
-        <div className="mt-20 space-y-28">
-          {chapters.map((ch, i) => (
-            <ChapterBlock
-              key={ch.id}
-              chapter={ch}
-              index={i}
-              onDelete={(cardId) => onDelete(ch.id, cardId)}
-            />
-          ))}
-        </div>
+    <section id="work" style={{ borderTop: "1px solid var(--c-border)" }}>
+      <div className="px-8 py-6 flex items-center justify-between" style={{ borderBottom: "1px solid var(--c-border)", background: "var(--c-surface)" }}>
+        <Row label="03 · SELECTED WORK" />
+        <span className="text-[10px] tracking-widest uppercase" style={{ color: "var(--c-muted)" }}>
+          {chapters.length} chapters
+        </span>
       </div>
+
+      {chapters.map((ch, i) => (
+        <ChapterBlock key={ch.id} chapter={ch} index={i} onDelete={kid => onDelete(ch.id, kid)} />
+      ))}
     </section>
   );
 }
 
-function ChapterBlock({
-  chapter,
-  index,
-  onDelete,
-}: {
-  chapter: Chapter;
-  index: number;
-  onDelete: (cardId: string) => void;
-}) {
-  const a = accentMap[chapter.accent];
+function ChapterBlock({ chapter, index, onDelete }: { chapter: Chapter; index: number; onDelete: (id: string) => void }) {
   return (
-    <div className="grid md:grid-cols-[0.4fr_0.6fr] gap-8 md:gap-12 items-start">
-      <div className="md:sticky md:top-28">
-        <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] uppercase tracking-[0.25em] ${a.chip}`}>
-          Chapter {chapter.number}
+    <div style={{ borderBottom: "1px solid var(--c-border)" }}>
+      {/* chapter header */}
+      <div className="px-8 py-5 grid md:grid-cols-[1fr_auto] items-baseline gap-4"
+        style={{ borderBottom: "1px solid var(--c-border)", background: "var(--c-surface)" }}>
+        <div>
+          <div className="text-[10px] tracking-widest uppercase mb-1" style={{ color: "var(--c-muted)" }}>
+            CHAPTER {chapter.number} · {String(index + 1).padStart(2, "0")} OF {seedChapters.length}
+          </div>
+          <h3 className="text-2xl md:text-4xl font-medium tracking-tight">{chapter.title}</h3>
+          {chapter.subtitle && <p className="text-xs tracking-widest mt-1" style={{ color: "var(--c-muted)" }}>{chapter.subtitle}</p>}
         </div>
-        <h3 className="mt-4 font-serif-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.9]">
-          {chapter.title}
-        </h3>
-        {chapter.subtitle && (
-          <p className="mt-2 text-sm font-serif-display italic text-ink/65">{chapter.subtitle}</p>
-        )}
-        <div className="chapter-rule w-20 my-5" />
         {chapter.intro && (
-          <p className="text-ink/70 leading-relaxed max-w-sm">{chapter.intro}</p>
+          <p className="text-sm max-w-xs" style={{ color: "var(--c-muted)" }}>{chapter.intro}</p>
         )}
-        <div className="mt-5 text-[11px] uppercase tracking-[0.25em] text-ink/45">
-          Chapter {String(index + 1).padStart(2, "0")} of {seedChapters.length}
-        </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-5">
+      {/* cards grid */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 divide-x divide-y" style={{ borderColor: "var(--c-border)" }}>
         {chapter.cards.map((card, i) => (
-          <WorkCard key={card.id} card={card} accent={chapter.accent} index={i} onDelete={() => onDelete(card.id)} />
+          <WorkCard key={card.id} card={card} index={i} onDelete={() => onDelete(card.id)} />
         ))}
         {chapter.cards.length === 0 && (
-          <div className="sm:col-span-2 border border-dashed border-ink/25 rounded-2xl p-10 text-center text-ink/50 italic font-serif-display">
-            Use the + button to add your first piece to this chapter.
+          <div className="col-span-3 px-8 py-16 text-center text-sm" style={{ color: "var(--c-muted)" }}>
+            Use + ADD to place a design here.
           </div>
         )}
       </div>
@@ -776,141 +481,116 @@ function ChapterBlock({
   );
 }
 
-function WorkCard({
-  card,
-  accent,
-  index,
-  onDelete,
-}: {
-  card: Card;
-  accent: Chapter["accent"];
-  index: number;
-  onDelete: () => void;
-}) {
-  const a = accentMap[accent];
-  const hasImage = !!card.image;
+function WorkCard({ card, index, onDelete }: { card: Card; index: number; onDelete: () => void }) {
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-15% 0px" }}
-      transition={{ duration: 0.6, delay: index * 0.05, ease: [0.2, 0.8, 0.2, 1] }}
-      className="group relative rounded-2xl overflow-hidden border border-ink/10 bg-cream shadow-card"
+    <motion.div
+      initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-10% 0px" }}
+      transition={{ duration: 0.5, delay: index * 0.04 }}
+      className="work-card"
+      style={{ borderColor: "var(--c-border)" }}
     >
-      <div className={`relative aspect-[4/3] overflow-hidden ${hasImage ? "" : `bg-gradient-to-br ${a.bg}`}`}>
-        {hasImage ? (
-          <img src={card.image} alt={card.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]" />
-        ) : (
-          <div className="absolute inset-0 grid place-items-center" />
-        )}
+      {card.image && (
+        <div className="overflow-hidden aspect-[16/9]" style={{ borderBottom: "1px solid var(--c-border)" }}>
+          <img src={card.image} alt={card.title} className="w-full h-full object-cover transition duration-500 hover:scale-[1.04]" />
+        </div>
+      )}
+      {!card.image && (
+        <div className="aspect-[16/9] flex items-center justify-center text-5xl font-medium tracking-tighter"
+          style={{ background: "var(--c-surface)", borderBottom: "1px solid var(--c-border)" }}>
+          {card.title.charAt(0)}
+        </div>
+      )}
+      <div className="p-5">
         {card.award && (
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-gold/90 text-ink text-[10px] uppercase tracking-[0.25em] px-2.5 py-1 rounded-full shadow-card">
-            <Award size={12} />
+          <div className="text-[10px] tracking-widest uppercase px-2 py-0.5 inline-block mb-3"
+            style={{ border: "1px solid var(--c-border)", color: "var(--c-muted)" }}>
             {card.award}
           </div>
         )}
-      </div>
-      <div className="p-5">
         <div className="flex items-start justify-between gap-3">
-          <h4 className="font-serif-display text-xl leading-tight">{card.title}</h4>
+          <h4 className="font-medium leading-tight">{card.title}</h4>
           {card.link && (
-            <a href={card.link} target="_blank" rel="noreferrer" className="shrink-0 h-8 w-8 rounded-full bg-ink text-paper grid place-items-center hover:scale-105 transition" aria-label="Open link">
-              <ArrowUpRight size={14} />
+            <a href={card.link} target="_blank" rel="noreferrer"
+              className="shrink-0 text-xs px-2 py-1 transition"
+              style={{ border: "1px solid var(--c-border)", fontFamily: "inherit", color: "var(--c-fg)" }}>
+              ↗
             </a>
           )}
         </div>
-        {card.subtitle && <p className="mt-1 text-xs uppercase tracking-[0.18em] text-ink/55">{card.subtitle}</p>}
-        {card.impact && <p className={`mt-3 text-sm ${a.text} italic font-serif-display`}>— {card.impact}</p>}
+        {card.subtitle && <p className="text-[11px] tracking-widest uppercase mt-1" style={{ color: "var(--c-muted)" }}>{card.subtitle}</p>}
+        {card.impact && <p className="text-sm mt-2 italic" style={{ color: "var(--c-muted)" }}>— {card.impact}</p>}
         {card.tags && card.tags.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {card.tags.map((t) => (
-              <span key={t} className="text-[10px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border border-ink/15 text-ink/60">{t}</span>
-            ))}
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {card.tags.map(t => <span key={t} className="tag">{t}</span>)}
           </div>
         )}
       </div>
-    </motion.article>
+    </motion.div>
   );
 }
 
-/* ================================================================== */
-/* PROCESS                                                             */
-/* ================================================================== */
-
+/* ── PROCESS ── */
 function Process() {
   return (
-    <section id="process" className="px-6 md:px-12 py-28 md:py-40 bg-ink text-paper">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-paper/60">
-          <span className="font-serif-display text-sm not-italic">IV.</span>
-          <span className="h-px w-10 bg-paper/40" />
-          <span>How I Work</span>
-        </div>
-        <h2 className="mt-6 font-serif-display text-[clamp(2.25rem,6vw,5rem)] leading-[0.95] tracking-tight max-w-3xl">
+    <section id="process" style={{ background: "var(--c-fg)", color: "var(--c-bg)" }}>
+      <div className="px-8 py-6" style={{ borderBottom: "1px solid var(--c-bg)", opacity: 0.3 }}>
+        <div className="text-[10px] tracking-widest uppercase" style={{ color: "var(--c-bg)" }}>04 · PROCESS</div>
+      </div>
+      <div className="max-w-6xl mx-auto px-8 py-16 md:py-20">
+        <h2 className="text-3xl md:text-5xl font-medium tracking-tight leading-tight max-w-2xl" style={{ color: "var(--c-bg)" }}>
           A short loop I run on every project, big or small.
         </h2>
-
-        <div className="mt-16 grid md:grid-cols-2 gap-x-10 gap-y-14">
-          {processSteps.map((step, i) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-10% 0px" }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-              className="relative border-t border-paper/20 pt-6"
-            >
+        <div className="grid md:grid-cols-2 gap-8 mt-14">
+          {processSteps.map((s, i) => (
+            <motion.div key={s.number}
+              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.07 }}
+              style={{ borderTop: "1px solid color-mix(in srgb, var(--c-bg) 30%, transparent)", paddingTop: "1.5rem" }}>
               <div className="flex items-baseline justify-between">
-                <span className="font-serif-display italic text-lg text-paper/50">{step.number}</span>
-                <span className="text-[11px] uppercase tracking-[0.3em] text-paper/50">Step {i + 1} / {processSteps.length}</span>
+                <span className="text-sm" style={{ color: "color-mix(in srgb, var(--c-bg) 50%, transparent)" }}>{s.number}</span>
+                <span className="text-[10px] tracking-widest uppercase" style={{ color: "color-mix(in srgb, var(--c-bg) 50%, transparent)" }}>STEP {i + 1} / {processSteps.length}</span>
               </div>
-              <h3 className="mt-3 font-serif-display text-4xl md:text-5xl leading-none">{step.title}</h3>
-              <p className="mt-5 text-paper/75 leading-relaxed max-w-md">{step.body}</p>
+              <h3 className="text-3xl md:text-4xl font-medium mt-2" style={{ color: "var(--c-bg)" }}>{s.title}</h3>
+              <p className="mt-4 text-sm leading-relaxed" style={{ color: "color-mix(in srgb, var(--c-bg) 70%, transparent)" }}>{s.body}</p>
             </motion.div>
           ))}
-        </div>
-
-        <div className="mt-24 border-t border-paper/20 pt-8 flex flex-wrap items-center justify-between gap-4 text-[11px] uppercase tracking-[0.3em] text-paper/50">
-          <span>Listen · Frame · Prototype · Edit</span>
-          <span>© {new Date().getFullYear()} {siteMeta.name}</span>
         </div>
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/* AWARDS                                                              */
-/* ================================================================== */
-
-function Awards() {
+/* ── RECOGNITION ── */
+function Recognition() {
   return (
-    <section id="awards" className="px-6 md:px-12 py-28 md:py-40">
-      <div className="mx-auto max-w-6xl">
-        <SectionLabel roman="V" title="Recognition" kicker="Awards, roles, and quiet proof." />
-        <div className="mt-16 border-t border-ink/20">
+    <section id="awards" className="px-8 py-20 md:py-28">
+      <div className="max-w-6xl mx-auto">
+        <Row label="05 · RECOGNITION" />
+        <div className="mt-10" style={{ borderTop: "1px solid var(--c-border)" }}>
           {awards.map((a, i) => {
-            const isLink = !!a.link;
-            const Tag = (isLink ? motion.a : motion.div) as typeof motion.div;
-            const extraProps = isLink ? ({ href: a.link, target: "_blank", rel: "noreferrer" } as const) : {};
+            const Tag = a.link ? motion.a : motion.div;
+            const extra = a.link ? { href: a.link, target: "_blank", rel: "noreferrer" } : {};
             return (
-              <Tag
-                key={i}
-                {...(extraProps as Record<string, unknown>)}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.05 }}
-                className={`group grid grid-cols-[auto_1fr_auto] items-center gap-6 py-6 md:py-8 border-b border-ink/20 transition-colors duration-300 px-2 -mx-2 rounded-sm ${isLink ? "hover:bg-ink hover:text-paper cursor-pointer" : ""}`}
+              <Tag key={i} {...(extra as Record<string, unknown>)}
+                initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.04 }}
+                className="group flex items-center justify-between gap-6 py-5 transition-colors"
+                style={{
+                  borderBottom: "1px solid var(--c-border)",
+                  paddingLeft: "0.5rem", paddingRight: "0.5rem",
+                  cursor: a.link ? "pointer" : "default",
+                  fontFamily: "inherit",
+                }}
               >
-                <span className={`h-2.5 w-2.5 rounded-full ${a.accent ? "bg-[#C8A24B]" : isLink ? "bg-ink group-hover:bg-paper" : "bg-ink"}`} />
-                <div className="flex-1 min-w-0 flex items-baseline gap-4 flex-wrap">
-                  <span className="font-serif-display text-3xl md:text-4xl leading-none">{a.title}</span>
-                  <span className="text-sm opacity-60 italic font-serif-display">{a.org}</span>
+                <div className="flex items-center gap-5 flex-1 min-w-0">
+                  <span className="h-1.5 w-1.5 shrink-0" style={{ background: a.accent ? "#c8a24b" : "var(--c-fg)" }} />
+                  <span className="font-medium text-lg md:text-2xl leading-tight">{a.title}</span>
+                  <span className="text-sm italic hidden md:inline" style={{ color: "var(--c-muted)" }}>{a.org}</span>
                 </div>
-                <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.25em] opacity-70">
+                <div className="flex items-center gap-4 text-[11px] tracking-widest uppercase shrink-0" style={{ color: "var(--c-muted)" }}>
                   <span>{a.year}</span>
-                  {isLink && <ArrowUpRight size={16} className="transition group-hover:rotate-0 -rotate-45" />}
+                  {a.link && <span className="transition-transform group-hover:translate-x-1">↗</span>}
                 </div>
               </Tag>
             );
@@ -921,266 +601,181 @@ function Awards() {
   );
 }
 
-/* ================================================================== */
-/* TOOLS & CAPABILITIES                                                */
-/* ================================================================== */
-
-function ToolsAndCapabilities() {
+/* ── TOOLS ── */
+function Tools() {
   return (
-    <section className="border-y border-ink/15 bg-cream/50">
-      <div className="mx-auto max-w-6xl px-6 md:px-12 py-20 md:py-24">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-16">
-          <div>
-            <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">Capabilities</div>
-            <ul className="grid grid-cols-2 gap-y-2 gap-x-4 text-lg">
-              {capabilities.map((c) => (
-                <li key={c} className="flex items-start gap-2">
-                  <Check size={13} className="text-[#8A6A20] mt-[7px] shrink-0" />
-                  <span>{c}</span>
-                </li>
-              ))}
-            </ul>
+    <section style={{ borderTop: "1px solid var(--c-border)", background: "var(--c-surface)" }}>
+      <div className="max-w-6xl mx-auto px-8 py-16 md:py-20 grid md:grid-cols-3 gap-12">
+        <div>
+          <div className="text-[10px] tracking-widest uppercase mb-6" style={{ color: "var(--c-muted)" }}>CAPABILITIES</div>
+          <ul className="space-y-1.5 text-sm" style={{ color: "var(--c-muted)" }}>
+            {capabilities.map(c => <li key={c} className="flex items-center gap-2"><span className="text-[10px]">→</span>{c}</li>)}
+          </ul>
+        </div>
+        <div>
+          <div className="text-[10px] tracking-widest uppercase mb-6" style={{ color: "var(--c-muted)" }}>DESIGN TOOLS</div>
+          <div className="flex flex-wrap gap-2">
+            {tools.map(t => <span key={t.name} className="tag">{t.name}</span>)}
           </div>
-
-          <div className="space-y-10">
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">Design tools</div>
-              <div className="flex flex-wrap gap-2">
-                {tools.map((t) => (
-                  <span key={t.name} className="px-3.5 py-1.5 rounded-full border border-ink/20 bg-cream text-sm hover:bg-ink hover:text-paper transition cursor-default" data-cursor="hover">
-                    {t.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">Tech stack</div>
-              <div className="flex flex-wrap gap-2">
-                {techStack.map((t) => (
-                  <span key={t} className="px-3.5 py-1.5 rounded-full border border-ink/15 bg-paper text-sm text-ink/75 hover:bg-ink hover:text-paper transition cursor-default" data-cursor="hover">
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-ink/55 mb-5">Certifications</div>
-              <ul className="divide-y divide-ink/10 border-y border-ink/10">
-                {certifications.map((c) => (
-                  <li key={c.name} className="flex items-baseline justify-between gap-4 py-3">
-                    <span className="font-serif-display italic text-lg leading-none">{c.name}</span>
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-ink/55">{c.by}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="text-[10px] tracking-widest uppercase mt-8 mb-4" style={{ color: "var(--c-muted)" }}>TECH STACK</div>
+          <div className="flex flex-wrap gap-2">
+            {techStack.map(t => <span key={t} className="tag">{t}</span>)}
           </div>
         </div>
-      </div>
-      <div className="py-6 border-t border-ink/15 bg-paper overflow-hidden">
-        <Marquee
-          items={["Designed in Figma", "Written in Canva", "Studying at GIKI", "Shipping from Islamabad", "Set in Cormorant Garamond"]}
-          speed={60}
-          className="text-xs uppercase tracking-[0.4em] text-ink/60"
-        />
+        <div>
+          <div className="text-[10px] tracking-widest uppercase mb-6" style={{ color: "var(--c-muted)" }}>CERTIFICATIONS</div>
+          <ul style={{ borderTop: "1px solid var(--c-border)" }}>
+            {certifications.map(c => (
+              <li key={c.name} className="flex items-baseline justify-between gap-4 py-3"
+                style={{ borderBottom: "1px solid var(--c-border)" }}>
+                <span className="text-sm">{c.name}</span>
+                <span className="text-[10px] tracking-widest uppercase shrink-0" style={{ color: "var(--c-muted)" }}>{c.by}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/* ABOUT & CURRENTLY                                                   */
-/* ================================================================== */
-
+/* ── ABOUT ── */
 function About() {
+  const time = useLocalTime("Asia/Karachi");
   return (
-    <section id="about" className="px-6 md:px-12 py-28 md:py-40">
-      <div className="mx-auto max-w-6xl grid md:grid-cols-[1fr_0.9fr] gap-12">
+    <section id="about" className="px-8 py-20 md:py-28">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-[1fr_0.8fr] gap-12">
         <div>
-          <SectionLabel roman="VI" title="About" />
-          <h2 className="mt-8 font-serif-display text-[clamp(2rem,5vw,4rem)] leading-[1.05]">
-            Designer, student, and campus community builder.
+          <Row label="06 · ABOUT" />
+          <h2 className="text-3xl md:text-4xl font-medium tracking-tight leading-tight mt-8">
+            Designer, student,<br />and campus builder.
           </h2>
-          <p className="mt-8 text-ink/80 leading-relaxed max-w-xl drop-cap">
-            {siteMeta.bio} Based in {siteMeta.location}. Reach me at{" "}
-            <a href={`mailto:${siteMeta.email}`} className="underline underline-offset-4 decoration-ink/40 hover:decoration-ink">
-              {siteMeta.email}
-            </a>.
-          </p>
+          <p className="mt-8 text-sm leading-relaxed max-w-lg" style={{ color: "var(--c-muted)" }}>{siteMeta.bio}</p>
 
           {siteMeta.education && (
-            <div className="mt-8 flex items-start gap-3 px-4 py-4 rounded-2xl border border-ink/15 bg-cream max-w-md">
-              <GraduationCap size={18} className="text-[#8A6A20] mt-0.5 shrink-0" />
-              <div className="leading-snug">
-                <div className="font-serif-display text-lg">{siteMeta.education.degree}</div>
-                <div className="text-[11px] uppercase tracking-[0.2em] text-ink/55 mt-1">
-                  {siteMeta.education.school}{siteMeta.education.location ? ` · ${siteMeta.education.location}` : ""}
-                </div>
-                {siteMeta.education.years && (
-                  <div className="text-[11px] uppercase tracking-[0.2em] text-ink/50 mt-0.5">{siteMeta.education.years}</div>
-                )}
+            <div className="mt-8 p-4" style={{ border: "1px solid var(--c-border)" }}>
+              <div className="text-[10px] tracking-widest uppercase mb-2" style={{ color: "var(--c-muted)" }}>EDUCATION</div>
+              <div className="font-medium">{siteMeta.education.degree}</div>
+              <div className="text-xs tracking-widest mt-1" style={{ color: "var(--c-muted)" }}>
+                {siteMeta.education.school} · {siteMeta.education.location}
               </div>
+              {siteMeta.education.years && (
+                <div className="text-xs tracking-widest mt-0.5" style={{ color: "var(--c-muted)" }}>{siteMeta.education.years}</div>
+              )}
             </div>
           )}
 
-          <div className="mt-8 grid sm:grid-cols-2 gap-3">
-            {siteMeta.availableFor.map((r) => (
-              <div key={r} className="flex items-center gap-2 px-4 py-3 rounded-2xl border border-ink/15 bg-cream">
-                <BookOpen size={14} className="text-[#8A6A20]" />
-                <span className="text-sm">Open for · {r}</span>
-              </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {siteMeta.availableFor.map(r => (
+              <span key={r} className="text-[10px] tracking-widest uppercase px-3 py-1.5" style={{ border: "1px solid var(--c-border)" }}>
+                OPEN FOR · {r.toUpperCase()}
+              </span>
             ))}
           </div>
         </div>
 
-        <aside className="relative">
-          <div className="rounded-2xl border border-ink/15 bg-cream p-6 md:p-8 shadow-card">
-            <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-ink/55">
-              <span>Currently</span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#5F7D4F] animate-pulse" />
-                Live
-              </span>
+        <div>
+          <div style={{ border: "1px solid var(--c-border)" }}>
+            <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid var(--c-border)", background: "var(--c-surface)" }}>
+              <div className="text-[10px] tracking-widest uppercase">CURRENTLY</div>
+              <div className="flex items-center gap-2 text-[10px] tracking-widest">
+                <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#4ade80" }} />
+                {time || "LIVE"}
+              </div>
             </div>
-            <ul className="mt-6 divide-y divide-ink/10">
-              {[
-                ["Reading", siteMeta.currently.reading],
-                ["Building", siteMeta.currently.building],
-                ["Thinking", siteMeta.currently.thinking],
-              ].map(([k, v], i) => (
-                <li key={i} className="py-4 flex flex-col">
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-ink/55">{k}</span>
-                  <span className="mt-1 font-serif-display italic text-xl leading-snug">{v}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6 pt-4 border-t border-ink/10 text-[11px] uppercase tracking-[0.3em] text-ink/55 flex items-center justify-between">
-              <span>{siteMeta.location}</span>
-              <LocalTime />
+            {[
+              ["READING", siteMeta.currently.reading],
+              ["BUILDING", siteMeta.currently.building],
+              ["THINKING", siteMeta.currently.thinking],
+            ].map(([k, v], i) => (
+              <div key={i} className="px-5 py-4" style={{ borderBottom: "1px solid var(--c-border)" }}>
+                <div className="text-[10px] tracking-widest uppercase mb-1" style={{ color: "var(--c-muted)" }}>{k}</div>
+                <div className="text-sm">{v}</div>
+              </div>
+            ))}
+            <div className="px-5 py-3 text-[10px] tracking-widest" style={{ color: "var(--c-muted)" }}>
+              {siteMeta.location} · {siteMeta.timezone}
             </div>
           </div>
-        </aside>
-      </div>
-    </section>
-  );
-}
-
-/* ================================================================== */
-/* TESTIMONIALS                                                        */
-/* ================================================================== */
-
-function Testimonials() {
-  if (!testimonials || testimonials.length === 0) return null;
-  return (
-    <section className="bg-ink text-paper px-6 md:px-12 py-24 md:py-32">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-paper/60">
-          <span className="font-serif-display text-sm not-italic">VII.</span>
-          <span className="h-px w-10 bg-paper/40" />
-          <span>Words from collaborators</span>
-        </div>
-        <div className="mt-12 grid md:grid-cols-2 gap-10">
-          {testimonials.map((t, i) => (
-            <motion.figure key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-15% 0px" }} transition={{ duration: 0.6, delay: i * 0.1 }} className="relative">
-              <Star size={18} className="text-[#C8A24B] mb-4" fill="#C8A24B" />
-              <blockquote className="font-serif-display italic text-2xl md:text-3xl leading-snug">"{t.quote}"</blockquote>
-              <figcaption className="mt-6 text-[11px] uppercase tracking-[0.3em] text-paper/60">— {t.name} · {t.role}</figcaption>
-            </motion.figure>
-          ))}
         </div>
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/* CONTACT                                                             */
-/* ================================================================== */
-
+/* ── CONTACT ── */
 function Contact() {
   const [copied, setCopied] = useState(false);
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(siteMeta.email);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
-    } catch {}
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(siteMeta.email); setCopied(true); setTimeout(() => setCopied(false), 1400); } catch {}
   };
 
   return (
-    <section id="contact" className="relative px-6 md:px-12 py-32 md:py-48 overflow-hidden">
-      <Spotlight />
-      <div className="relative mx-auto max-w-6xl text-center">
-        <SectionLabel roman="VIII" title="Contact" align="center" />
-        <h2 className="mt-10 font-serif-display leading-[0.9] tracking-tight text-[clamp(3rem,10vw,9rem)]">
-          <em className="italic font-light">Let's</em>
-          <br />
-          build something <br className="hidden md:block" />
-          thoughtful.
+    <section id="contact" style={{ borderTop: "1px solid var(--c-border)", background: "var(--c-fg)", color: "var(--c-bg)" }}>
+      <div className="max-w-6xl mx-auto px-8 py-24 md:py-36 text-center">
+        <div className="text-[10px] tracking-widest uppercase mb-8" style={{ color: "color-mix(in srgb, var(--c-bg) 60%, transparent)" }}>07 · CONTACT</div>
+        <h2 className="text-4xl md:text-7xl font-medium tracking-tight leading-tight" style={{ color: "var(--c-bg)" }}>
+          Let's build something<br />thoughtful.
         </h2>
-
-        <div className="mt-14 flex flex-wrap items-center justify-center gap-3">
-          <Magnetic>
-            <a href={`mailto:${siteMeta.email}`} className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-ink text-paper text-sm font-medium hover:bg-ink/90 transition">
-              <Mail size={15} />
-              {siteMeta.email}
-            </a>
-          </Magnetic>
-          <button onClick={copyEmail} title={`Copy ${siteMeta.email} to clipboard`} aria-label={`Copy ${siteMeta.email} to clipboard`} className="flex items-center gap-2 px-5 py-3.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink/5 transition">
-            {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? "Email copied" : "Copy email"}
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-14">
+          <a href={`mailto:${siteMeta.email}`}
+            className="text-xs tracking-widest uppercase px-6 py-3 transition"
+            style={{ background: "var(--c-bg)", color: "var(--c-fg)", fontFamily: "inherit" }}>
+            {siteMeta.email}
+          </a>
+          <button onClick={copy}
+            className="text-xs tracking-widest uppercase px-5 py-3 transition"
+            style={{ border: "1px solid color-mix(in srgb, var(--c-bg) 40%, transparent)", color: "var(--c-bg)", background: "transparent", fontFamily: "inherit" }}>
+            {copied ? "COPIED ✓" : "COPY EMAIL"}
           </button>
-          <Magnetic>
-            <a href={siteMeta.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-5 py-3.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink/5 transition">
-              <Linkedin size={15} />
-              LinkedIn
-            </a>
-          </Magnetic>
+          <a href={siteMeta.linkedin} target="_blank" rel="noreferrer"
+            className="text-xs tracking-widest uppercase px-5 py-3 transition"
+            style={{ border: "1px solid color-mix(in srgb, var(--c-bg) 40%, transparent)", color: "var(--c-bg)", fontFamily: "inherit" }}>
+            LINKEDIN ↗
+          </a>
           {siteMeta.github && (
-            <Magnetic>
-              <a href={siteMeta.github} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-5 py-3.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink/5 transition">
-                <Github size={15} />
-                GitHub
-              </a>
-            </Magnetic>
-          )}
-          <Magnetic>
-            <a href={siteMeta.resume} download className="flex items-center gap-2 px-5 py-3.5 rounded-full border border-ink/25 bg-cream text-sm hover:bg-ink/5 transition">
-              <Download size={15} />
-              Résumé
+            <a href={siteMeta.github} target="_blank" rel="noreferrer"
+              className="text-xs tracking-widest uppercase px-5 py-3 transition"
+              style={{ border: "1px solid color-mix(in srgb, var(--c-bg) 40%, transparent)", color: "var(--c-bg)", fontFamily: "inherit" }}>
+              GITHUB ↗
             </a>
-          </Magnetic>
+          )}
+          <a href={siteMeta.resume} download
+            className="text-xs tracking-widest uppercase px-5 py-3 transition"
+            style={{ border: "1px solid color-mix(in srgb, var(--c-bg) 40%, transparent)", color: "var(--c-bg)", fontFamily: "inherit" }}>
+            RÉSUMÉ ↓
+          </a>
         </div>
 
-        <div className="mt-14 text-[11px] uppercase tracking-[0.3em] text-ink/55 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-          <span>{siteMeta.location}</span>
-          <span>·</span>
-          <LocalTime />
-          <span>·</span>
-          <span>Press <kbd className="px-1.5 py-0.5 rounded bg-ink/10 border border-ink/10 text-ink/70">⌘K</kbd> to jump anywhere</span>
+        <div className="mt-16 text-[10px] tracking-widest" style={{ color: "color-mix(in srgb, var(--c-bg) 50%, transparent)" }}>
+          PRESS ⌘K TO JUMP ANYWHERE
         </div>
       </div>
     </section>
   );
 }
 
-/* ================================================================== */
-/* COLOPHON                                                            */
-/* ================================================================== */
-
-function Colophon() {
+/* ── FOOTER ── */
+function Footer() {
   return (
-    <footer className="border-t border-ink/15 px-6 md:px-12 py-10 text-[11px] uppercase tracking-[0.3em] text-ink/55">
-      <div className="mx-auto max-w-6xl flex flex-wrap items-center justify-between gap-4">
-        <div>© {new Date().getFullYear()} {siteMeta.name} · All work, words, and whitespace her own.</div>
-        <div className="flex items-center gap-4">
-          <span>Set in Cormorant Garamond & DM Sans</span>
-          <span>·</span>
-          <span>Vol. I</span>
-        </div>
+    <footer className="px-8 py-6 flex flex-wrap items-center justify-between gap-4 text-[10px] tracking-widest uppercase"
+      style={{ borderTop: "1px solid var(--c-border)", color: "var(--c-muted)" }}>
+      <span>© {new Date().getFullYear()} {siteMeta.name}</span>
+      <div className="flex items-center gap-4">
+        <span>Set in IBM Plex Mono</span>
+        <span>·</span>
+        <span className="barcode-text text-2xl select-none" aria-hidden>SAADIA</span>
       </div>
     </footer>
+  );
+}
+
+/* ── SHARED ── */
+function Row({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-4">
+      <span className="text-[10px] tracking-widest uppercase" style={{ color: "var(--c-muted)" }}>{label}</span>
+      <span className="flex-1 h-px" style={{ background: "var(--c-border)" }} />
+    </div>
   );
 }
