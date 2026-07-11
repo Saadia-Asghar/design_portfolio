@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm install --frozen-lockfile=false && pnpm --filter @workspace/portfolio run build",
+  "outputDirectory": "artifacts/portfolio/dist",
+  "framework": null,
+  "env": {
+    "BASE_PATH": "/"
+  }
+}
