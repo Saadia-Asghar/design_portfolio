@@ -508,20 +508,6 @@ export const seedChapters: Chapter[] = [
     accent: "gold",
     cards: [
       {
-        id: "premed-system",
-        title: "Visual-Identity Asset System",
-        subtitle: "30+ assets · Canva + Figma",
-        impact: "40% lift in digital engagement",
-        tags: ["Visual Identity"],
-      },
-      {
-        id: "premed-workflow",
-        title: "Design-to-Delivery Workflow",
-        subtitle: "Template standardization",
-        impact: "25% faster turnaround on recurring assets",
-        tags: ["Systems"],
-      },
-      {
         id: "premed-edu-1",
         title: "Education Slides — Series I",
         subtitle: "Slide deck · Canva",
