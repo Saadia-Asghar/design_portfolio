@@ -1,0 +1,109 @@
+Skip to main content
+GitHub Docs
+
+REST APIQuickstart
+Quickstart for GitHub REST API
+Learn how to get started with the GitHub REST API.
+
+Tool navigation
+GitHub CLI
+curl
+JavaScript
+In this article
+Introduction
+This article describes how to quickly get started with the GitHub REST API using GitHub CLI, curl, or JavaScript. For a more detailed guide, see Getting started with the REST API.
+
+Using GitHub CLI in the command line
+GitHub CLI is the easiest way to use the GitHub REST API from the command line.
+
+Install GitHub CLI on macOS, Windows, or Linux. For more information, see Installation in the GitHub CLI repository.
+
+To authenticate to GitHub, run the following command from your terminal.
+
+gh auth login
+Select where you want to authenticate to:
+
+If you access GitHub at GitHub.com, select GitHub.com.
+If you access GitHub at a different domain, select Other, then enter your hostname (for example: octocorp.ghe.com).
+Follow the rest of the on-screen prompts.
+
+GitHub CLI automatically stores your Git credentials for you when you choose HTTPS as your preferred protocol for Git operations and answer "yes" to the prompt asking if you would like to authenticate to Git with your GitHub credentials. This can be useful as it allows you to use Git commands like git push and git pull without needing to set up a separate credential manager or use SSH.
+
+Make a request using the GitHub CLI api subcommand, followed by the path. Use the --method or -X flag to specify the method. For more information, see the GitHub CLI api documentation.
+
+This example makes a request to the "Get Octocat" endpoint, which uses the method GET and the path /octocat. For the full reference documentation for this endpoint, see REST API endpoints for meta data.
+
+Shell
+gh api /octocat --method GET
+Using GitHub CLI in GitHub Actions
+You can also use GitHub CLI in your GitHub Actions workflows. For more information, see Using GitHub CLI in workflows.
+
+Authenticating with an access token
+Instead of using the gh auth login command, pass an access token as an environment variable called GH_TOKEN. GitHub recommends that you use the built-in GITHUB_TOKEN instead of creating a token. If this is not possible, store your token as a secret and replace GITHUB_TOKEN in the example below with the name of your secret. For more information about GITHUB_TOKEN, see Use GITHUB_TOKEN for authentication in workflows. For more information about secrets, see Using secrets in GitHub Actions.
+
+The following example workflow uses the List repository issues endpoint, and requests a list of issues in the octocat/Spoon-Knife repository.
+
+YAML
+on:
+  workflow_dispatch:
+jobs:
+  use_api:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api https://api.github.com/repos/octocat/Spoon-Knife/issues
+Authenticating with a GitHub App
+If you are authenticating with a GitHub App, you can create an installation access token within your workflow:
+
+Store your GitHub App's client ID as a configuration variable. In the following example, replace APP_CLIENT_ID with the name of the configuration variable. You can find your client ID on the settings page for your app or through the API. For more information, see REST API endpoints for GitHub Apps. For more information about configuration variables, see Store information in variables.
+
+Generate a private key for your app. Store the contents of the resulting file as a secret. (Store the entire contents of the file, including -----BEGIN RSA PRIVATE KEY----- and -----END RSA PRIVATE KEY-----.) In the following example, replace APP_PRIVATE_KEY with the name of the secret. For more information, see Managing private keys for GitHub Apps. For more information about secrets, see Using secrets in GitHub Actions.
+
+Add a step to generate a token, and use that token instead of GITHUB_TOKEN. Note that this token will expire after 60 minutes. For example:
+
+YAML
+on:
+  workflow_dispatch:
+jobs:
+  track_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Use API
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          gh api https://api.github.com/repos/octocat/Spoon-Knife/issues
+Next steps
+For a more detailed guide, see Getting started with the REST API.
+
+Help and support
+Did you find what you needed?
+
+Privacy policy
+Help us make these docs great!
+All GitHub docs are open source. See something that's wrong or unclear? Submit a pull request.
+
+Learn how to contribute
+
+Still need help?
+Ask the GitHub community
+Contact support
+Legal
+© 2026 GitHub, Inc.
+Terms
+Privacy
+Status
+Pricing
+Expert services
+Blog
+Quickstart for GitHub REST API - GitHub Docs
